@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO OPTIMIZATION -->
+    <title>Shahzaib | Full Stack Developer & AI Specialist</title>
+    <meta name="description" content="Professional portfolio of Shahzaib, a Full Stack Developer & AI Specialist. High-performance web applications and AI solutions.">
+    <meta name="author" content="Shahzaib">
+
+    <!-- JSON-LD SCHEMA (Google SEO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Shahzaib",
+      "jobTitle": "Full Stack Developer",
+      "knowsAbout": ["Web Development", "Artificial Intelligence", "React", "Node.js"]
+    }
+    </script>
+    
+    <!-- FONTS & ICONS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #03050c;
+            --card-bg: rgba(17, 22, 45, 0.7);
+            --text: #ffffff;
+            --text-dim: #b8c5d6;
+            --accent: #00ff88;
+            --accent-glow: rgba(0, 255, 136, 0.4);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+
+        /* --- HERO BACKGROUND ANIMATION --- */
+        .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: -1; background: var(--bg); }
+        .blob { position: absolute; width: 400px; height: 400px; background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 212, 255, 0.15)); filter: blur(80px); border-radius: 50%; animation: move 20s infinite alternate; }
+        .blob-1 { top: -100px; right: -100px; }
+        .blob-2 { bottom: -100px; left: -100px; animation-delay: -5s; }
+        @keyframes move { from { transform: translate(0, 0) scale(1); } to { transform: translate(100px, 100px) scale(1.2); } }
+        .particles { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .particle { position: absolute; background: var(--accent); border-radius: 50%; opacity: 0.3; animation: float 15s infinite linear; }
+        @keyframes float { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 50% { opacity: 0.5; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
+
+        /* --- NAVIGATION --- */
+        nav { position: fixed; top: 0; width: 100%; z-index: 1000; background: rgba(3, 5, 12, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        nav .container { height: 80px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 900; text-decoration: none; color: white; letter-spacing: -1px; }
+        .nav-links { display: flex; gap: 35px; list-style: none; transition: var(--transition); }
+        .nav-links a { color: var(--text-dim); text-decoration: none; font-size: 15px; font-weight: 600; transition: var(--transition); }
+        .nav-links a:hover { color: var(--accent); }
+        .menu-btn { display: none; background: none; border: none; color: var(--accent); font-size: 28px; cursor: pointer; }
+
+        /* --- HERO --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
+        .hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 0 60px; position: relative; }
+        .hero-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; width: 100%; }
+        .hero-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); padding: 45px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px rgba(0,0,0,0.4); }
+        
+        #disp-tagline { 
+            font-size: clamp(18px, 3vw, 24px); color: var(--accent); font-weight: 600; 
+            margin-bottom: 30px; border-right: 3px solid var(--accent); width: fit-content; 
+            white-space: nowrap; overflow: hidden; animation: blink 0.8s step-end infinite;
+        }
+        @keyframes blink { 50% { border-color: transparent; } }
+
+        .img-box { 
+            width: 320px; height: 320px; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; 
+            background: var(--card-bg); border: 4px solid var(--accent); overflow: hidden; 
+            animation: morph 8s ease-in-out infinite; box-shadow: 0 0 50px var(--accent-glow); 
+        }
+        @keyframes morph { 0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; } 50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; } }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- CIRCULAR SKILL PROGRESS --- */
+        .skill-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 30px 20px;
+            text-align: center;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .skill-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.15);
+        }
+        
+        .circular-progress {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .circular-progress svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+        
+        .circle-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+        }
+        
+        .circle-progress {
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 339.292; /* 2 * PI * 54 */
+            stroke-dashoffset: 339.292;
+            transition: stroke-dashoffset 1.5s ease-in-out;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .skill-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* --- CARDS & GRIDS --- */
+        .section { padding: 100px 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: var(--card-bg); border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); overflow: hidden; }
+        .card:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 20px 40px rgba(0, 255, 136, 0.1); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; background: #060918; }
+        .card-body { padding: 25px; }
+        .card h3 { color: var(--accent); margin-bottom: 10px; }
+
+        /* --- CONTACT --- */
+        .contact-box { background: rgba(255,255,255,0.02); padding: 80px 40px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        .contact-form { max-width: 600px; margin: 40px auto; text-align: left; }
+        input, textarea { width: 100%; padding: 15px; background: #060918; border: 1px solid #333; border-radius: 12px; color: white; margin-bottom: 15px; font-family: inherit; }
+        .btn-primary { background: var(--accent); color: var(--bg); width: 100%; border: none; padding: 15px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        #social-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 20px; margin-top: 40px; }
+        #social-container a { width: 60px; height: 60px; background: #11162d; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; transition: var(--transition); text-decoration: none; border: 1px solid rgba(255,255,255,0.1); }
+
+        /* --- ADMIN PANELS --- */
+        .admin-trigger { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: var(--bg); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); cursor: pointer; z-index: 2000; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        .modal.active { display: flex; }
+        .admin-card { background: #11162d; width: 100%; max-width: 650px; padding: 40px; border-radius: 30px; border: 1px solid var(--accent); max-height: 90vh; overflow-y: auto; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.1); overflow-x: auto; }
+        .tab-btn { background: none; border: none; color: var(--text-dim); padding: 10px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+        .tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        .list-item { display: flex; justify-content: space-between; align-items: center; background: #060918; padding: 12px; border-radius: 10px; margin-top: 10px; font-size: 14px; }
+
+        @media (max-width: 992px) {
+            .menu-btn { display: block; }
+            .nav-links { position: fixed; top: 80px; right: -100%; width: 100%; height: 100vh; background: rgba(3, 5, 12, 0.98); flex-direction: column; align-items: center; padding-top: 60px; gap: 30px; }
+            .nav-links.active { right: 0; }
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .profile-wrapper { order: -1; }
+            .img-box { width: 260px; height: 260px; margin: 0 auto; }
+            #disp-tagline { margin: 0 auto 30px; }
+            .grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero-bg">
+        <div class="blob blob-1"></div><div class="blob blob-2"></div>
+        <div class="particles" id="particle-container"></div>
+    </div>
+
+    <nav>
+        <div class="container">
+            <a href="#" class="logo">SHAHZAIB<span style="color:var(--accent)">.</span></a>
+            <button class="menu-btn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" onclick="toggleMenu()">Home</a></li>
+                <li><a href="#skills" onclick="toggleMenu()">Skills</a></li>
+                <li><a href="#projects" onclick="toggleMenu()">Projects</a></li>
+                <li><a href="#contact" onclick="toggleMenu()">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="hero" id="home">
+            <div class="hero-grid">
+                <div class="hero-card">
+                    <h1>Hi, I'm <span id="disp-name" style="color:var(--accent)">Shahzaib</span></h1>
+                    <div id="disp-tagline">Full Stack Developer</div>
+                    <p style="color:var(--text-dim); margin-bottom: 30px; font-size: 18px;">AI Enthusiast & Professional Web Architect building the future.</p>
+                    <a href="#contact" class="btn-primary" style="display:inline-block; width:auto; text-decoration:none; padding:15px 40px;">Hire Me Now</a>
+                </div>
+                <div class="profile-wrapper">
+                    <div class="img-box"><img src="" id="disp-img" alt="Shahzaib"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="section">
+            <h2 style="font-size: 32px; margin-bottom: 40px;">Tech <span style="color:var(--accent)">Stack</span></h2>
+            <div class="grid" id="skills-grid"></div>
+        </section>
+
+        <section id="projects" class="section">
+            <h2 style="font-size: 32px; margin-bottom: 40px;">My <span style="color:var(--accent)">Projects</span></h2>
+            <div class="grid" id="projects-grid"></div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="contact-box">
+                <h2>Let's <span style="color:var(--accent)">Connect</span></h2>
+                <div class="contact-form">
+                    <form action="https://formspree.io/f/YOUR_ID" method="POST">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Email Address" required>
+                        <textarea name="message" rows="5" placeholder="Message" required></textarea>
+                        <button type="submit" class="btn-primary">Send Message</button>
+                    </form>
+                </div>
+                <div id="social-container"></div>
+            </div>
+        </section>
+    </main>
+
+    <button class="admin-trigger" onclick="handleAdmin()"><i class="fas fa-unlock-alt"></i></button>
+
+    <!-- ADMIN MODALS -->
+    <div class="modal" id="loginModal">
+        <div class="admin-card" style="max-width: 400px;">
+            <h2>Admin Login</h2><br>
+            <form id="loginForm">
+                <input type="email" id="logEmail" placeholder="Email" required>
+                <input type="password" id="logPass" placeholder="Password" required>
+                <button type="submit" class="btn-primary">Access Dashboard</button>
+            </form>
+            <button onclick="closeModal('loginModal')" style="margin-top:10px; background:none; color:white; border:none; cursor:pointer; width:100%;">Close</button>
+        </div>
+    </div>
+
+    <div class="modal" id="adminPanel">
+        <div class="admin-card">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('tab-profile')">Profile</button>
+                <button class="tab-btn" onclick="switchTab('tab-skills')">Skills</button>
+                <button class="tab-btn" onclick="switchTab('tab-projects')">Projects</button>
+                <button class="tab-btn" onclick="switchTab('tab-socials')">Socials</button>
+                <button onclick="logout()" style="margin-left:auto; color:red; border:none; background:none; cursor:pointer;">Logout</button>
+            </div>
+            
+            <div id="tab-profile" class="tab-content">
+                <label>Profile Pic</label><input type="file" id="fileInput" accept="image/*">
+                <input type="text" id="in-name" placeholder="Name">
+                <input type="text" id="in-tagline" placeholder="Tagline">
+                <button class="btn-primary" onclick="saveProfile()">Save Profile</button>
+            </div>
+
+            <div id="tab-skills" class="tab-content" style="display:none">
+                <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <input type="text" id="in-skill" placeholder="Skill Name (e.g. React.js)" style="flex:1">
+                    <input type="number" id="in-skill-percent" placeholder="%" min="0" max="100" style="width:80px">
+                    <button class="btn-primary" onclick="addSkill()" style="width:100px">Add</button>
+                </div>
+                <small style="color:var(--text-dim);">Enter skill efficiency percentage (0-100)</small>
+                <div id="admin-skills-list" style="margin-top:15px"></div>
+            </div>
+
+            <div id="tab-projects" class="tab-content" style="display:none">
+                <label>Project Screenshot</label><input type="file" id="projImgInput" accept="image/*">
+                <input type="text" id="in-proj-title" placeholder="Project Name">
+                <textarea id="in-proj-desc" placeholder="Project Description"></textarea>
+                <input type="text" id="in-proj-link" placeholder="Demo Link">
+                <button class="btn-primary" onclick="addProject()">Deploy Project</button>
+                <div id="admin-projects-list"></div>
+            </div>
+
+            <div id="tab-socials" class="tab-content" style="display:none">
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="in-soc-name" placeholder="Platform (e.g. Facebook)">
+                    <input type="text" id="in-soc-link" placeholder="https://facebook.com/yourprofile">
+                    <button class="btn-primary" onclick="addSocial()" style="width:100px">Add</button>
+                </div>
+                <div id="admin-social-list"></div>
+            </div>
+            
+            <button onclick="closeModal('adminPanel')" class="btn-primary" style="background:#333; margin-top:20px;">Exit Panel</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-86Gnn3WCpnwQZcDToVzRTyZjrCI8ySI",
+            authDomain: "kodekavesh.firebaseapp.com",
+            databaseURL: "https://kodekavesh-default-rtdb.firebaseio.com",
+            projectId: "kodekavesh",
+            storageBucket: "kodekavesh.firebasestorage.app",
+            messagingSenderId: "19259324111",
+            appId: "1:19259324111:web:d14d0652af8349310d69ba",
+            measurementId: "G-T9Z0CL5407"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        // --- PARTICLES ---
+        const particleContainer = document.getElementById('particle-container');
+        for(let i=0; i<30; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.width = p.style.height = Math.random() * 5 + 2 + 'px';
+            p.style.left = Math.random() * 100 + '%';
+            p.style.animationDelay = Math.random() * 15 + 's';
+            particleContainer.appendChild(p);
+        }
+
+        // --- UTILS ---
+        let typingTimer;
+        function typeWriter(text, elementId) {
+            let i = 0; const el = document.getElementById(elementId);
+            el.innerHTML = ""; clearTimeout(typingTimer);
+            function type() { if(i < text.length) { el.innerHTML += text.charAt(i); i++; typingTimer = setTimeout(type, 70); } }
+            type();
+        }
+
+        function getIcon(name) {
+            const n = name.toLowerCase();
+            if (n.includes('github')) return 'fab fa-github';
+            if (n.includes('linkedin')) return 'fab fa-linkedin-in';
+            if (n.includes('whatsapp')) return 'fab fa-whatsapp';
+            if (n.includes('instagram')) return 'fab fa-instagram';
+            if (n.includes('facebook')) return 'fab fa-facebook-f';
+            if (n.includes('twitter') || n.includes('x.com')) return 'fab fa-x-twitter';
+            return 'fas fa-link';
+        }
+
+        // Circular progress animation function
+        function animateCircle(element, percent) {
+            const circumference = 2 * Math.PI * 54; // radius = 54
+            const offset = circumference - (percent / 100) * circumference;
+            setTimeout(() => {
+                element.style.strokeDashoffset = offset;
+            }, 100);
+        }
+
+        window.toggleMenu = () => document.getElementById('navLinks').classList.toggle('active');
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+        window.handleAdmin = () => auth.currentUser ? document.getElementById('adminPanel').classList.add('active') : document.getElementById('loginModal').classList.add('active');
+        window.switchTab = (id) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).style.display = 'block';
+            if(event && event.target) event.target.classList.add('active');
+        };
+
+        // --- DATA SYNC ---
+        let lastTagline = "";
+        onValue(ref(db, 'portfolio'), (snapshot) => {
+            const data = snapshot.val(); if(!data) return;
+
+            document.getElementById('disp-name').innerText = data.profile?.name || "Shahzaib";
+            document.getElementById('disp-img').src = data.profile?.imgUrl || "";
+            if(data.profile?.tagline && data.profile.tagline !== lastTagline) {
+                lastTagline = data.profile.tagline; typeWriter(lastTagline, 'disp-tagline');
+            }
+
+            // Sync Admin Panel
+            document.getElementById('in-name').value = data.profile?.name || "";
+            document.getElementById('in-tagline').value = data.profile?.tagline || "";
+
+            // Render Skills with Circular Progress
+            const skGrid = document.getElementById('skills-grid');
+            const skList = document.getElementById('admin-skills-list');
+            skGrid.innerHTML = ""; skList.innerHTML = "";
+            
+            if(data.skills) {
+                Object.entries(data.skills).forEach(([id, s]) => {
+                    const percent = s.percentage || 0;
+                    
+                    // Frontend Display
+                    const skillCard = document.createElement('div');
+                    skillCard.className = 'skill-card';
+                    skillCard.innerHTML = `
+                        <div class="circular-progress">
+                            <svg viewBox="0 0 120 120">
+                                <circle class="circle-bg" cx="60" cy="60" r="54"/>
+                                <circle class="circle-progress" cx="60" cy="60" r="54" data-percent="${percent}"/>
+                            </svg>
+                            <div class="progress-text">${percent}%</div>
+                        </div>
+                        <div class="skill-name">${s.name}</div>
+                    `;
+                    skGrid.appendChild(skillCard);
+                    
+                    // Animate circle
+                    const circle = skillCard.querySelector('.circle-progress');
+                    animateCircle(circle, percent);
+                    
+                    // Admin List
+                    skList.innerHTML += `<div class="list-item">${s.name} - ${percent}%<button onclick="deleteItem('skills/${id}')" style="color:red; background:none; border:none; cursor:pointer">Del</button></div>`;
+                });
+            }
+
+            // Render Projects
+            const pjGrid = document.getElementById('projects-grid');
+            const pjList = document.getElementById('admin-projects-list');
+            pjGrid.innerHTML = ""; pjList.innerHTML = "";
+            if(data.projects) Object.entries(data.projects).forEach(([id, p]) => {
+                pjGrid.innerHTML += `<div class="card"><img src="${p.img || ''}" class="card-img" onerror="this.src='https://via.placeholder.com/400x200/11162d/00ff88?text=Project'"><div class="card-body"><h3>${p.title}</h3><p style="color:var(--text-dim)">${p.desc}</p><br><a href="${p.link}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:700">View Project →</a></div></div>`;
+                pjList.innerHTML += `<div class="list-item">${p.title}<button onclick="deleteItem('projects/${id}')" style="color:red; background:none; border:none; cursor:pointer">Del</button></div>`;
+            });
+
+            // Render Socials
+            const socCont = document.getElementById('social-container');
+            const socList = document.getElementById('admin-social-list');
+            socCont.innerHTML = ""; socList.innerHTML = "";
+            if(data.socials) Object.entries(data.socials).forEach(([id, s]) => {
+                socCont.innerHTML += `<a href="${s.link}" target="_blank" aria-label="${s.name}"><i class="${getIcon(s.name)}"></i></a>`;
+                socList.innerHTML += `<div class="list-item">${s.name}<button onclick="deleteItem('socials/${id}')" style="color:red; background:none; border:none; cursor:pointer">Del</button></div>`;
+            });
+        });
+
+        // --- ACTIONS ---
+        document.getElementById('loginForm').onsubmit = (e) => {
+            e.preventDefault(); 
+            signInWithEmailAndPassword(auth, logEmail.value, logPass.value)
+                .then(() => { closeModal('loginModal'); document.getElementById('adminPanel').classList.add('active'); })
+                .catch(err => alert("Login Failed: " + err.message));
+        };
+        
+        window.logout = () => signOut(auth).then(() => location.reload());
+
+        window.saveProfile = () => {
+            const file = fileInput.files[0];
+            const updates = { name: in_name.value, tagline: in_tagline.value };
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { 
+                    updates.imgUrl = e.target.result; 
+                    update(ref(db, 'portfolio/profile'), updates).then(() => alert("Profile Updated!")); 
+                };
+                reader.readAsDataURL(file);
+            } else { 
+                update(ref(db, 'portfolio/profile'), updates).then(() => alert("Profile Updated!")); 
+            }
+        };
+
+        window.addSkill = () => {
+            const name = document.getElementById('in-skill').value.trim();
+            const percentage = parseInt(document.getElementById('in-skill-percent').value) || 0;
+            
+            if(!name) {
+                alert("Please enter skill name!");
+                return;
+            }
+            
+            if(percentage < 0 || percentage > 100) {
+                alert("Percentage must be between 0-100!");
+                return;
+            }
+            
+            push(ref(db, 'portfolio/skills'), { 
+                name: name, 
+                percentage: percentage 
+            }).then(() => {
+                document.getElementById('in-skill').value = "";
+                document.getElementById('in-skill-percent').value = "";
+                alert("Skill added successfully!");
+            });
+        };
+        
+        window.addProject = () => {
+            const file = projImgInput.files[0];
+            const pData = { 
+                title: in_proj_title.value.trim(), 
+                desc: in_proj_desc.value.trim(), 
+                link: in_proj_link.value.trim() 
+            };
+            
+            if(!pData.title || !pData.desc) {
+                alert("Please fill in project title and description!");
+                return;
+            }
+            
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { 
+                    pData.img = e.target.result; 
+                    push(ref(db, 'portfolio/projects'), pData).then(() => {
+                        alert("Project added!");
+                        in_proj_title.value = "";
+                        in_proj_desc.value = "";
+                        in_proj_link.value = "";
+                        projImgInput.value = "";
+                    }); 
+                };
+                reader.readAsDataURL(file);
+            } else { 
+                push(ref(db, 'portfolio/projects'), pData).then(() => {
+                    alert("Project added!");
+                    in_proj_title.value = "";
+                    in_proj_desc.value = "";
+                    in_proj_link.value = "";
+                }); 
+            }
+        };
+
+        window.addSocial = () => {
+            const nameInput = document.getElementById('in-soc-name');
+            const linkInput = document.getElementById('in-soc-link');
+
+            const name = nameInput.value.trim();
+            const link = linkInput.value.trim();
+
+            if (!name || !link) {
+                alert("Please enter both Platform Name and URL!");
+                return;
+            }
+
+            push(ref(db, 'portfolio/socials'), { 
+                name: name, 
+                link: link 
+            })
+            .then(() => {
+                alert(name + " added successfully!");
+                nameInput.value = "";
+                linkInput.value = "";
+            })
+            .catch((error) => {
+                alert("Firebase Error: " + error.message);
+            });
+        };
+        
+        window.deleteItem = (path) => {
+            if(confirm("Delete this item permanently?")) {
+                remove(ref(db, 'portfolio/' + path))
+                    .then(() => alert("Deleted successfully!"))
+                    .catch(err => alert("Error: " + err.message));
+            }
+        };
+    </script>
+</body>
+</html>
