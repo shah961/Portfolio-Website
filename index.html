@@ -1,599 +1,260 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Muhammad Shahzaib — AI & Full-Stack Architect</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0A0A0A;--fg:#E8E8E8;--muted:#5A5A5A;--accent:#00E5FF;--accent-dim:#003D47;--card:rgba(12,12,12,0.88);--card-border:rgba(0,229,255,0.1);--titanium:#7A7A7A;--glow:rgba(0,229,255,0.15);--font-display:'Orbitron',sans-serif;--font-mono:'JetBrains Mono',monospace;--font-body:'Inter',sans-serif}
-html{scroll-behavior:auto;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--fg);font-family:var(--font-body);overflow-x:hidden;line-height:1.6;-webkit-font-smoothing:antialiased}
-::selection{background:var(--accent);color:#000}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--accent-dim);border-radius:4px}
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Floating Flower Heart</title>
+  <style>
+    * {
+      touch-action: none;
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #050103;
+      font-family: sans-serif;
+    }
+    #webcam {
+      display: none;
+    }
+    #hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      color: #ff99dd;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      background: rgba(25, 5, 20, 0.7);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 100, 200, 0.4);
+      pointer-events: none;
+      z-index: 10;
+      box-shadow: 0 0 10px rgba(255, 100, 200, 0.3);
+    }
+  </style>
 
-#loader{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;transition:opacity .6s,visibility .6s}
-#loader.hidden{opacity:0;visibility:hidden;pointer-events:none}
-.loader-ring{width:48px;height:48px;border:2px solid var(--accent-dim);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loader-text{font-family:var(--font-mono);font-size:11px;letter-spacing:4px;color:var(--muted);text-transform:uppercase}
-
-#webgl-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 15% 50%,rgba(0,229,255,.025) 0%,transparent 55%),radial-gradient(ellipse at 85% 20%,rgba(0,80,180,.018) 0%,transparent 50%),radial-gradient(ellipse at 50% 90%,rgba(0,229,255,.015) 0%,transparent 40%)}
-
-#nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;transition:background .4s,border-color .4s;border-bottom:1px solid transparent}
-#nav.scrolled{background:rgba(10,10,10,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom-color:var(--card-border)}
-.nav-logo{font-family:var(--font-display);font-weight:900;font-size:18px;color:var(--accent);letter-spacing:2px}
-.nav-links{display:flex;gap:20px}
-.nav-links a{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:1px;text-transform:uppercase;transition:color .3s;position:relative}
-.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width .3s}
-.nav-links a:hover{color:var(--accent)}
-.nav-links a:hover::after{width:100%}
-
-#scroll-container{position:relative;z-index:2}
-section{min-height:100vh;position:relative;display:flex;align-items:center;justify-content:center;padding:100px 24px 60px}
-.section-inner{max-width:1100px;width:100%;margin:0 auto}
-
-#hero{flex-direction:column;text-align:center;padding-top:120px}
-.hero-tag{font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:20px;opacity:.8}
-#hero-headline{font-family:var(--font-display);font-weight:900;font-size:clamp(28px,6vw,64px);line-height:1.1;letter-spacing:-1px;margin-bottom:20px;background:linear-gradient(135deg,var(--fg) 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-#hero-subheadline{font-family:var(--font-mono);font-size:clamp(12px,2vw,16px);color:var(--muted);max-width:600px;margin:0 auto 36px;line-height:1.7}
-.hero-cta{display:inline-flex;align-items:center;gap:10px;padding:14px 32px;border:1px solid var(--accent);color:var(--accent);font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:6px;transition:all .3s;cursor:pointer;background:transparent}
-.hero-cta:hover{background:var(--accent);color:#000;box-shadow:0 0 30px var(--glow)}
-.scroll-indicator{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:.4}
-.scroll-indicator span{font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase}
-.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--accent),transparent);animation:scrollPulse 2s ease-in-out infinite}
-@keyframes scrollPulse{0%,100%{opacity:.3;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
-
-#about .section-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-.about-label{font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:16px}
-.about-heading{font-family:var(--font-display);font-weight:700;font-size:clamp(22px,4vw,36px);line-height:1.2;margin-bottom:24px;color:var(--fg)}
-#about-text{font-family:var(--font-mono);font-size:13px;color:var(--titanium);line-height:1.9}
-.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px}
-.stat-card{padding:20px;background:var(--card);border:1px solid var(--card-border);border-radius:10px;backdrop-filter:blur(10px)}
-.stat-number{font-family:var(--font-display);font-weight:900;font-size:28px;color:var(--accent)}
-.stat-label{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
-.about-visual{position:relative;height:400px;display:flex;align-items:center;justify-content:center}
-
-#projects-wrapper{overflow:hidden}
-#projects{min-height:auto;height:100vh;display:flex;align-items:center;padding:100px 24px}
-.projects-header{margin-bottom:40px}
-.projects-label{font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
-.projects-heading{font-family:var(--font-display);font-weight:700;font-size:clamp(22px,4vw,36px);color:var(--fg)}
-#projects-track{display:flex;gap:24px;width:max-content;padding-right:24px}
-.project-card{width:320px;flex-shrink:0;padding:28px;background:var(--card);border:1px solid var(--card-border);border-radius:14px;backdrop-filter:blur(12px);transition:border-color .3s,transform .3s}
-.project-card:hover{border-color:rgba(0,229,255,.3);transform:translateY(-4px)}
-.project-tech-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
-.project-tech-tag{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;padding:4px 10px;border:1px solid var(--accent-dim);border-radius:4px;color:var(--accent);text-transform:uppercase}
-.project-title{font-family:var(--font-display);font-weight:700;font-size:18px;margin-bottom:12px;color:var(--fg)}
-.project-desc{font-family:var(--font-mono);font-size:12px;color:var(--titanium);line-height:1.8;margin-bottom:20px}
-.project-link{font-family:var(--font-mono);font-size:11px;color:var(--accent);text-decoration:none;letter-spacing:1px;text-transform:uppercase;display:inline-flex;align-items:center;gap:6px;transition:gap .3s}
-.project-link:hover{gap:12px}
-
-#tech-stack .section-inner{text-align:center}
-.stack-label{font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
-.stack-heading{font-family:var(--font-display);font-weight:700;font-size:clamp(22px,4vw,36px);color:var(--fg);margin-bottom:48px}
-#skills-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;max-width:800px;margin:0 auto}
-.skill-badge{font-family:var(--font-mono);font-size:12px;padding:10px 20px;border:1px solid var(--card-border);border-radius:8px;color:var(--fg);background:var(--card);backdrop-filter:blur(8px);transition:all .3s;cursor:default}
-.skill-badge:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 20px var(--glow)}
-
-#contact .section-inner{max-width:700px}
-.terminal{background:#0C0C0C;border:1px solid #1A1A1A;border-radius:14px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.terminal-header{background:#111;padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #1A1A1A}
-.terminal-dot{width:10px;height:10px;border-radius:50%}
-.terminal-dot.r{background:#FF5F57}.terminal-dot.y{background:#FEBC2E}.terminal-dot.g{background:#28C840}
-.terminal-title{font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-left:8px;letter-spacing:1px}
-.terminal-body{padding:24px;font-family:var(--font-mono);font-size:13px;line-height:2}
-.term-line{color:#28C840;opacity:.8}
-.term-line .prompt{color:var(--accent)}.term-line .cmd{color:#FEBC2E}
-.term-input-group{margin:12px 0}
-.term-input-group label{display:block;color:var(--muted);font-size:11px;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
-.term-input{width:100%;padding:10px 14px;background:#080808;border:1px solid #222;border-radius:6px;color:var(--fg);font-family:var(--font-mono);font-size:13px;outline:none;transition:border-color .3s}
-.term-input:focus{border-color:var(--accent)}
-textarea.term-input{min-height:80px;resize:vertical}
-.term-submit{margin-top:16px;padding:12px 28px;background:transparent;border:1px solid #28C840;color:#28C840;font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;border-radius:6px;cursor:pointer;transition:all .3s}
-.term-submit:hover{background:#28C840;color:#000}
-.term-divider{border:none;border-top:1px solid #1A1A1A;margin:20px 0}
-.term-settlement{color:var(--muted);font-size:11px;line-height:2}
-.term-settlement strong{color:var(--accent);font-weight:500}
-#term-status{color:#28C840;font-size:12px;margin-top:12px;min-height:20px}
-
-#footer{position:relative;z-index:2;padding:40px 24px;text-align:center;border-top:1px solid var(--card-border)}
-#footer p{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:1px}
-
-@media(max-width:768px){.nav-links{display:none}#about .section-inner{grid-template-columns:1fr;gap:40px}.about-visual{height:250px}.project-card{width:280px;padding:22px}section{padding:80px 16px 40px}#projects{padding:80px 16px}.terminal-body{padding:16px}}
-@media(max-width:400px){.project-card{width:260px}.stat-card{padding:14px}.stat-number{font-size:22px}}
-@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-</style>
+  <!-- Lightweight Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 </head>
 <body>
 
-<div id="loader"><div class="loader-ring"></div><span class="loader-text">Initializing</span></div>
-<canvas id="webgl-canvas"></canvas>
+  <div id="hud">SYSTEM: Camera Blocked</div>
+  <video id="webcam" playsinline=""></video>
 
-<nav id="nav" role="navigation" aria-label="Main navigation">
-  <span class="nav-logo">MS</span>
-  <div class="nav-links">
-    <a href="#hero">Home</a><a href="#about">About</a><a href="#projects-wrapper">Work</a><a href="#tech-stack">Stack</a><a href="#contact">Contact</a>
-  </div>
-</nav>
+  <script>
+    const hud = document.getElementById('hud');
+    const videoElement = document.getElementById('webcam');
 
-<div id="scroll-container">
-  <section id="hero">
-    <div class="section-inner" style="text-align:center">
-      <p class="hero-tag">// AI & Full-Stack Engineering</p>
-      <h1 id="hero-headline">Engineering Intelligent Systems</h1>
-      <p id="hero-subheadline">Muhammad Shahzaib — Architecting enterprise-grade AI solutions and full-stack software, built entirely from a smartphone.</p>
-      <a href="#contact" class="hero-cta">Initiate Contact <span>&rarr;</span></a>
-    </div>
-    <div class="scroll-indicator" aria-hidden="true"><span>Scroll</span><div class="scroll-line"></div></div>
-  </section>
+    // --- 1. GENERATE PROCEDURAL PINK FLOWER TEXTURE ---
+    function createFlowerTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const ctx = canvas.getContext('2d');
+      
+      const cx = 64;
+      const cy = 64;
+      const petals = 5;
 
-  <section id="about">
-    <div class="section-inner">
-      <div class="about-content">
-        <p class="about-label">// Profile</p>
-        <h2 class="about-heading">Built Different. Mobile-First Engineering.</h2>
-        <p id="about-text">Loading profile data...</p>
-        <div class="about-stats">
-          <div class="stat-card"><div class="stat-number">2+</div><div class="stat-label">Years Engineering</div></div>
-          <div class="stat-card"><div class="stat-number">15+</div><div class="stat-label">Projects Delivered</div></div>
-          <div class="stat-card"><div class="stat-number">100%</div><div class="stat-label">Mobile Built</div></div>
-          <div class="stat-card"><div class="stat-number">AI</div><div class="stat-label">Core Specialization</div></div>
-        </div>
-      </div>
-      <div class="about-visual" aria-hidden="true"></div>
-    </div>
-  </section>
+      // Draw 5 smooth soft-pink petals
+      for (let i = 0; i < petals; i++) {
+        const angle = (i * 2 * Math.PI) / petals;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
 
-  <section id="projects-wrapper">
-    <div class="section-inner">
-      <div class="projects-header">
-        <p class="projects-label">// Selected Work</p>
-        <h2 class="projects-heading">Project Deployments</h2>
-      </div>
-      <div id="projects-track"></div>
-    </div>
-  </section>
+        const gradient = ctx.createRadialGradient(0, -22, 2, 0, -22, 22);
+        gradient.addColorStop(0, 'rgba(255, 220, 245, 1)');
+        gradient.addColorStop(0.5, 'rgba(255, 105, 180, 0.8)');
+        gradient.addColorStop(1, 'rgba(215, 30, 120, 0)');
 
-  <section id="tech-stack">
-    <div class="section-inner">
-      <p class="stack-label">// Arsenal</p>
-      <h2 class="stack-heading">Technology Stack</h2>
-      <div id="skills-grid"></div>
-    </div>
-  </section>
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.ellipse(0, -22, 12, 22, 0, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+      }
 
-  <section id="contact">
-    <div class="section-inner">
-      <div class="terminal">
-        <div class="terminal-header">
-          <div class="terminal-dot r"></div><div class="terminal-dot y"></div><div class="terminal-dot g"></div>
-          <span class="terminal-title">shahzaib@ai-node:~</span>
-        </div>
-        <div class="terminal-body">
-          <div class="term-line"><span class="prompt">&gt;</span> <span class="cmd">init --contact</span></div>
-          <div class="term-line"><span class="prompt">&gt;</span> Establishing secure channel... <span style="color:#28C840">OK</span></div>
-          <form id="contact-form" autocomplete="off">
-            <div class="term-input-group"><label for="contact-name">&gt; NAME:</label><input type="text" id="contact-name" class="term-input" required placeholder="Your full name"></div>
-            <div class="term-input-group"><label for="contact-email">&gt; EMAIL:</label><input type="email" id="contact-email" class="term-input" required placeholder="your@email.com"></div>
-            <div class="term-input-group"><label for="contact-message">&gt; MESSAGE:</label><textarea id="contact-message" class="term-input" required placeholder="Describe your project or inquiry..."></textarea></div>
-            <button type="submit" class="term-submit">Execute Transmission</button>
-          </form>
-          <div id="term-status"></div>
-          <hr class="term-divider">
-          <div class="term-settlement">
-            <div><strong>SETTLEMENT OPTIONS:</strong></div>
-            <div>Binance Pay &nbsp;|&nbsp; JazzCash &nbsp;|&nbsp; EasyPaisa</div>
-            <div style="margin-top:4px;opacity:.7">Enterprise B2B: Direct settlement preferred.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
+      // Yellow glowing flower pistil/center
+      const centerGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 10);
+      centerGrad.addColorStop(0, 'rgba(255, 255, 200, 1)');
+      centerGrad.addColorStop(0.5, 'rgba(255, 215, 0, 0.9)');
+      centerGrad.addColorStop(1, 'rgba(255, 140, 0, 0)');
+      
+      ctx.fillStyle = centerGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10, 0, Math.PI * 2);
+      ctx.fill();
 
-<footer id="footer"><p>&copy; 2024 Muhammad Shahzaib. Engineered on mobile.</p></footer>
+      return new THREE.CanvasTexture(canvas);
+    }
 
-<script type="module">
-import * as THREE from 'three';
-const gsap = window.gsap;
-const ScrollTrigger = window.ScrollTrigger;
-gsap.registerPlugin(ScrollTrigger);
+    // --- 2. THREE.JS SCENE SETUP ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 4;
 
-/* ═══ FIREBASE CONFIG — Replace with your credentials ═══ */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-let db = null, firebaseReady = false;
-try { firebase.initializeApp(firebaseConfig); db = firebase.database(); firebaseReady = true; } catch(e) { console.warn('Firebase fallback mode', e); }
+    const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "low-power" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    document.body.appendChild(renderer.domElement);
 
-/* ═══ FALLBACK DATA ═══ */
-const fallbackData = {
-  hero: { headline: "Engineering Intelligent Systems", subheadline: "Muhammad Shahzaib — Architecting enterprise-grade AI solutions and full-stack software, built entirely from a smartphone." },
-  about: { text: "2+ years of mobile engineering excellence, specializing in enterprise-grade AI systems, full-stack architectures, and high-performance applications. From neural network pipelines to production deployments, every line of code is crafted with precision and purpose — directly from a mobile device." },
-  projects: [
-    { id:'p1', title:'BoardPrep AI', description:'An intelligent examination preparation platform leveraging machine learning to generate adaptive practice tests, analyze student performance patterns, and deliver personalized learning pathways in real time.', tech:'Python, TensorFlow, React Native, Firebase', link:'#' },
-    { id:'p2', title:'Crypto Mining Simulation', description:'A real-time cryptocurrency mining simulation application with dynamic difficulty adjustment, hash rate visualization, GPU thermal modeling, and portfolio tracking dashboard.', tech:'JavaScript, Node.js, WebSocket, Chart.js', link:'#' },
-    { id:'p3', title:'NeuralChat Engine', description:'A conversational AI interface with context-aware response generation, sentiment analysis, and multi-turn dialogue management built for enterprise customer support automation.', tech:'Python, NLP, FastAPI, Vue.js', link:'#' },
-    { id:'p4', title:'DevOps Pipeline Visualizer', description:'An interactive CI/CD pipeline visualization tool that maps build stages, deployment environments, and monitors real-time build metrics across microservice architectures.', tech:'TypeScript, React, D3.js, Docker API', link:'#' }
-  ],
-  skills: ['Python','JavaScript','TypeScript','React','React Native','Node.js','TensorFlow','Firebase','MongoDB','PostgreSQL','Docker','Git','REST APIs','WebSocket','Three.js','GSAP']
-};
-let appData = JSON.parse(JSON.stringify(fallbackData));
+    // Number of flower particles in the heart
+    const particleCount = 750;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
 
-/* ═══ DOM RENDERERS ═══ */
-function renderHero(d) { document.getElementById('hero-headline').textContent = d.hero.headline; document.getElementById('hero-subheadline').textContent = d.hero.subheadline; }
-function renderAbout(d) { document.getElementById('about-text').textContent = d.about.text; }
-function renderProjects(d) {
-  const t = document.getElementById('projects-track'); if (!t) return; t.innerHTML = '';
-  (d.projects || []).forEach(p => {
-    const tags = (p.tech||'').split(',').map(s=>s.trim()).filter(Boolean);
-    const c = document.createElement('div'); c.className = 'project-card';
-    c.innerHTML = `<div class="project-tech-row">${tags.map(x=>`<span class="project-tech-tag">${x}</span>`).join('')}</div><h3 class="project-title">${p.title}</h3><p class="project-desc">${p.description}</p><a href="${p.link||'#'}" target="_blank" rel="noopener" class="project-link">View Live <span>&rarr;</span></a>`;
-    t.appendChild(c);
-  });
-  initHScroll();
-}
-function renderSkills(d) {
-  const g = document.getElementById('skills-grid'); if (!g) return; g.innerHTML = '';
-  (d.skills||[]).forEach(s => { const b = document.createElement('span'); b.className='skill-badge'; b.textContent=s; g.appendChild(b); });
-}
-function renderAll(d) { renderHero(d); renderAbout(d); renderProjects(d); renderSkills(d); }
+    // Generate 3D Parametric Heart Points
+    for (let i = 0; i < particleCount; i++) {
+      const t = Math.random() * Math.PI * 2;
+      const u = (Math.random() - 0.5) * 2; // Surface depth variation
+      
+      // Standard 2D Heart Formula scaled down
+      const scale = 0.11;
+      let x = 16 * Math.pow(Math.sin(t), 3);
+      let y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+      
+      // Volumetric volume spread (3D depth layer)
+      const rFactor = Math.pow(Math.random(), 0.3); // Push distribution nicely outwards
+      x *= scale * rFactor;
+      y *= scale * rFactor;
+      let z = u * 0.4 * (1 - Math.abs(x / 2)); // Thicker at center, thinner at borders
 
-/* ═══ FIREBASE LISTENERS ═══ */
-if (firebaseReady && db) {
-  db.ref('portfolio/hero').on('value', s => { const v=s.val(); if(v){appData.hero=v;renderHero(appData);} });
-  db.ref('portfolio/about').on('value', s => { const v=s.val(); if(v){appData.about=v;renderAbout(appData);} });
-  db.ref('portfolio/projects').on('value', s => { const v=s.val(); if(v){appData.projects=Object.keys(v).map(k=>({id:k,...v[k]}));renderProjects(appData);} });
-  db.ref('portfolio/skills').on('value', s => { const v=s.val(); if(v){appData.skills=Object.values(v);renderSkills(appData);} });
-}
+      positions[i * 3]     = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+    }
 
-/* ═══ CONTACT FORM ═══ */
-document.getElementById('contact-form').addEventListener('submit', e => {
-  e.preventDefault();
-  const n=document.getElementById('contact-name').value.trim(), em=document.getElementById('contact-email').value.trim(), m=document.getElementById('contact-message').value.trim(), st=document.getElementById('term-status');
-  if(!n||!em||!m){st.textContent='> ERROR: All fields required.';st.style.color='#FF5F57';return;}
-  if(firebaseReady&&db){db.ref('portfolio/contacts').push({name:n,email:em,message:m,timestamp:Date.now()}).then(()=>{st.textContent='> Transmission sent successfully.';st.style.color='#28C840';e.target.reset();}).catch(()=>{st.textContent='> ERROR: Transmission failed.';st.style.color='#FF5F57';});}
-  else{st.textContent='> Logged locally (Firebase offline).';st.style.color='#FEBC2E';e.target.reset();}
-});
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    
+    // Flower Particle Material
+    const material = new THREE.PointsMaterial({
+      color: 0xffcced,
+      size: 0.28,                     // Flower particle visual size
+      map: createFlowerTexture(),
+      transparent: true,
+      opacity: 0.95,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
 
-/* ═══════════════════════════════════════════
-   THREE.JS — SCENE SETUP
-   ═══════════════════════════════════════════ */
-const canvas = document.getElementById('webgl-canvas');
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 200);
-camera.position.set(0, 0, 6);
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const heartOrb = new THREE.Points(geometry, material);
+    scene.add(heartOrb);
 
-/* ═══ BACKGROUND DUST — prevents empty scene ═══ */
-const BG_N = 200;
-const bgP = new Float32Array(BG_N * 3);
-for (let i = 0; i < BG_N; i++) { bgP[i*3]=(Math.random()-.5)*60; bgP[i*3+1]=(Math.random()-.5)*45; bgP[i*3+2]=(Math.random()-.5)*50-10; }
-const bgGeo = new THREE.BufferGeometry();
-bgGeo.setAttribute('position', new THREE.BufferAttribute(bgP, 3));
-scene.add(new THREE.Points(bgGeo, new THREE.PointsMaterial({ size:.04, color:0x1a2a3a, transparent:true, opacity:.4, blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true })));
+    // Dynamic targets for hand gesture control
+    let targetX = 0;
+    let targetY = 0;
+    let targetScale = 1;
+    let targetRotationY = 0;
 
-/* ═══ OBJECT 1: NEURAL NET PARTICLES ═══ */
-const mob = window.innerWidth < 768;
-const GW = mob ? 26 : 34, GH = mob ? 18 : 26;
-const PC = GW * GH, SP = 0.22;
-const NPIPES = mob ? 6 : 8, PISP = (GW * SP) / NPIPES;
-const pPos = new Float32Array(PC * 3);
-const pCol = new Float32Array(PC * 3);
-const bX = new Float32Array(PC), bZ = new Float32Array(PC);
-const piX = new Float32Array(PC), piY = new Float32Array(PC);
-const tc = new THREE.Color();
-for (let i = 0; i < PC; i++) {
-  const ix = i % GW, iz = Math.floor(i / GW);
-  const x = (ix - GW/2)*SP, z = (iz - GH/2)*SP;
-  bX[i]=x; bZ[i]=z;
-  pPos[i*3]=x; pPos[i*3+1]=0; pPos[i*3+2]=z;
-  const pi = Math.min(NPIPES-1, Math.max(0, Math.round((ix/Math.max(1,GW-1))*(NPIPES-1))));
-  piX[i] = (pi-(NPIPES-1)/2)*PISP;
-  piY[i] = (iz-GH/2)*SP*2.2;
-  const t = i/PC;
-  tc.setHSL(.52+t*.1, .9, .3+t*.35);
-  pCol[i*3]=tc.r; pCol[i*3+1]=tc.g; pCol[i*3+2]=tc.b;
-}
-const pGeo = new THREE.BufferGeometry();
-pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
-const pMat = new THREE.PointsMaterial({ size: mob?.042:.032, vertexColors:true, transparent:true, opacity:1, blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true });
-const particles = new THREE.Points(pGeo, pMat);
-scene.add(particles);
+    // --- 3. MEDIAPIPE TRACKING ---
+    function onResults(results) {
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        hud.innerText = "SYSTEM: Hand Locked";
+        const landmarks = results.multiHandLandmarks[0];
 
-/* ═══ OBJECT 2: HYPERCUBE ═══ */
-const hyperGrp = new THREE.Group();
-const cubes = [];
-for (let i = 0; i < 5; i++) {
-  const s = Math.max(.01, .4+i*.25);
-  const m = new THREE.Mesh(new THREE.BoxGeometry(s,s,s), new THREE.MeshBasicMaterial({ color:0x00E5FF, wireframe:true, transparent:true, opacity:.4-i*.06, blending:THREE.AdditiveBlending, depthWrite:false }));
-  cubes.push(m); hyperGrp.add(m);
-}
-scene.add(hyperGrp);
+        // Wrist (0): Position tracking
+        const wrist = landmarks[0];
+        targetX = (0.5 - wrist.x) * 4;
+        targetY = (0.5 - wrist.y) * 5;
 
-/* ═══ OBJECT 3: AI ENGINE NODE ═══ */
-const engGrp = new THREE.Group();
-const coreM = new THREE.MeshBasicMaterial({ color:0x00D4FF, transparent:true, opacity:.7, blending:THREE.AdditiveBlending, depthWrite:false });
-engGrp.add(new THREE.Mesh(new THREE.IcosahedronGeometry(.35, 3), coreM));
-engGrp.add(new THREE.Mesh(new THREE.IcosahedronGeometry(.55, 2), new THREE.MeshBasicMaterial({ color:0x00AAFF, transparent:true, opacity:.12, blending:THREE.AdditiveBlending, depthWrite:false })));
-const rings = [];
-for (let i = 0; i < 3; i++) {
-  const r = new THREE.Mesh(new THREE.TorusGeometry(Math.max(.01,.7+i*.28), .008, 12, 80), new THREE.MeshBasicMaterial({ color:0x00E5FF, transparent:true, opacity:.4-i*.08, blending:THREE.AdditiveBlending, depthWrite:false }));
-  r.rotation.x = Math.PI*.25*i+.3; r.rotation.y = Math.PI*.4*i;
-  rings.push(r); engGrp.add(r);
-}
-scene.add(engGrp);
-/* ═══ OBJECT 4: SINGLE COLLAPSE NODE ═══ */
-const sNode = new THREE.Mesh(new THREE.SphereGeometry(.12,16,16), new THREE.MeshBasicMaterial({ color:0x00E5FF, transparent:true, opacity:.9, blending:THREE.AdditiveBlending, depthWrite:false }));
-sNode.add(new THREE.Mesh(new THREE.SphereGeometry(.3,12,12), new THREE.MeshBasicMaterial({ color:0x00E5FF, transparent:true, opacity:.1, blending:THREE.AdditiveBlending, depthWrite:false })));
-scene.add(sNode);
+        // Thumb Tip (4) & Index Tip (8): Zoom tracking
+        const thumb = landmarks[4];
+        const index = landmarks[8];
+        const pinchDist = Math.hypot(thumb.x - index.x, thumb.y - index.y);
+        
+        targetScale = Math.min(Math.max(pinchDist * 3.5, 0.6), 1.8);
 
-/* ═══════════════════════════════════════════
-   LERP STATE MACHINE
-   ScrollTrigger ONLY sets these targets.
-   The render loop smoothly interpolates.
-   This eliminates ALL transition glitches.
-   ═══════════════════════════════════════════ */
-const T = {
-  /* Particles */
-  pDisp: 0,      // 0=wave, 1=pipeline
-  pOp: 1,        // particle opacity
-  pRot: 0,       // particle Y rotation offset
+        // Middle Finger Tip (12): Rotation tracking
+        const middleTip = landmarks[12];
+        targetRotationY = (middleTip.x - wrist.x) * 5;
+      } else {
+        hud.innerText = "SYSTEM: Searching Hand...";
+      }
+    }
 
-  /* Hypercube */
-  hZ: -30,       // Z position
-  hOp: 0,        // group opacity (via material)
-  hSep: 0,       // layer separation
+    const hands = new Hands({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    });
 
-  /* Engine Node */
-  eX: 8, eZ: -8, // position
-  eOp: 0,        // opacity
+    hands.setOptions({
+      maxNumHands: 1,
+      modelComplexity: 0,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
 
-  /* Single Node */
-  nZ: -40,       // Z position
-  nOp: 0,        // opacity
+    hands.onResults(onResults);
 
-  /* Camera */
-  cX: 0, cY: 0   // subtle drift
-};
-/* Current values (what's actually rendered) */
-const C = { pDisp:0, pOp:1, pRot:0, hZ:-30, hOp:0, hSep:0, eX:8, eZ:-8, eOp:0, nZ:-40, nOp:0, cX:0, cY:0 };
+    // --- 4. CAMERA SETUP ---
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'user',
+            width: { ideal: 320 },
+            height: { ideal: 240 }
+          }
+        });
+        
+        videoElement.srcObject = stream;
+        await videoElement.play();
 
-/* Smooth lerp factor — tuned for buttery 60fps transitions */
-const LERP = 0.045;
-function lerp(a, b, t) { return a + (b - a) * t; }
+        const cameraUtils = new Camera(videoElement, {
+          onFrame: async () => {
+            await hands.send({ image: videoElement });
+          },
+          width: 320,
+          height: 240
+        });
+        cameraUtils.start();
+      } catch (err) {
+        hud.innerText = "SYSTEM: Camera Blocked";
+      }
+    }
 
-/* ═══════════════════════════════════════════
-   GSAP SCROLL TRIGGERS
-   Each one ONLY writes to T (targets).
-   No direct property changes on objects.
-   ═══════════════════════════════════════════ */
+    startCamera();
 
-/* Nav style */
-ScrollTrigger.create({ start:'top -80', onUpdate: self => { document.getElementById('nav').classList.toggle('scrolled', self.scroll() > 80); }});
+    // --- 5. RENDER & ANIMATION LOOP ---
+    let time = 0;
 
-/* ── Phase 1: Hero → About ──
-   Particles morph from wave → pipeline + fade
-   Hypercube flies in from deep Z */
-ScrollTrigger.create({
-  trigger:'#about', start:'top bottom', end:'top 30%', scrub:1,
-  onUpdate: self => {
-    const p = self.progress;
-    T.pDisp = p;              // wave → pipeline
-    T.pOp = 1 - p * 0.85;    // fade but not fully (background presence)
-    T.hZ = -30 + p * 30;     // -30 → 0
-    T.hOp = p;               // 0 → 1
-  }
-});
+    function animate() {
+      requestAnimationFrame(animate);
 
-/* Hypercube separation inside About section */
-ScrollTrigger.create({
-  trigger:'#about', start:'top 60%', end:'bottom 20%', scrub:1,
-  onUpdate: self => { T.hSep = self.progress; }
-});
-/* ── Phase 2: About → Projects ──
-   Hypercube fades out + moves back
-   Engine node fades in + slides to center */
-ScrollTrigger.create({
-  trigger:'#projects-wrapper', start:'top bottom', end:'top 30%', scrub:1,
-  onUpdate: self => {
-    const p = self.progress;
-    T.hZ = 0 - p * 15;      // 0 → -15
-    T.hOp = 1 - p;           // 1 → 0
-    T.eX = 8 - p * 8;        // 8 → 0
-    T.eZ = -8 + p * 8;       // -8 → 0
-    T.eOp = p;                // 0 → 1
-  }
-});
+      time += 0.04;
 
-/* ── Phase 3: Projects → Tech Stack ──
-   Engine node shifts right + fades
-   Particles fully invisible */
-ScrollTrigger.create({
-  trigger:'#tech-stack', start:'top bottom', end:'top 30%', scrub:1,
-  onUpdate: self => {
-    const p = self.progress;
-    T.eX = 0 + p * 6;        // 0 → 6
-    T.eZ = 0 - p * 5;        // 0 → -5
-    T.eOp = 1 - p;           // 1 → 0
-    T.pOp = 0.15 - p * 0.15; // fade out completely
-  }
-});
+      // Smooth movement interpolation
+      heartOrb.position.x += (targetX - heartOrb.position.x) * 0.1;
+      heartOrb.position.y += (targetY - heartOrb.position.y) * 0.1;
 
-/* ── Phase 4: Tech Stack → Contact ──
-   Single node flies in, everything else gone */
-ScrollTrigger.create({
-  trigger:'#contact', start:'top bottom', end:'top 40%', scrub:1,
-  onUpdate: self => {
-    const p = self.progress;
-    T.nZ = -40 + p * 42;     // -40 → 2
-    T.nOp = p;                // 0 → 1
-  }
-});
+      // Scale zoom interpolation
+      const currentScale = heartOrb.scale.x;
+      const nextScale = currentScale + (targetScale - currentScale) * 0.1;
+      heartOrb.scale.setScalar(nextScale);
 
-/* Camera micro-drift */
-ScrollTrigger.create({
-  trigger:'#scroll-container', start:'top top', end:'bottom bottom',
-  onUpdate: self => {
-    const p = self.progress;
-    T.cX = Math.sin(p * Math.PI * 2) * 0.3;
-    T.cY = Math.cos(p * Math.PI) * 0.15;
-  }
-});
+      // Rotation interpolation
+      heartOrb.rotation.y += (targetRotationY - heartOrb.rotation.y) * 0.1 + 0.005;
+      
+      // Heart pulsing beat animation
+      const heartPulse = 1 + Math.sin(time * 3) * 0.05;
+      heartOrb.scale.multiplyScalar(heartPulse);
 
-/* Ring speed from scroll velocity */
-let scrollVel = 0, ringSpd = 0.012;
-ScrollTrigger.create({
-  trigger:'#tech-stack', start:'top bottom', end:'bottom top',
-  onUpdate: self => { scrollVel = Math.abs(self.getVelocity()); }
-});
+      // Soft twinkle/shimmer effect
+      material.opacity = 0.85 + Math.sin(time * 2) * 0.15;
 
-/* ═══ HERO ENTRANCE ANIMATION ═══ */
-const heroTl = gsap.timeline({ delay: 0.8 });
-heroTl.from('.hero-tag', { y:30, opacity:0, duration:.7, ease:'power3.out' })
-  .from('#hero-headline', { y:50, opacity:0, duration:.9, ease:'power3.out' }, '-=.4')
-  .from('#hero-subheadline', { y:40, opacity:0, duration:.8, ease:'power3.out' }, '-=.5')
-  .from('.hero-cta', { y:30, opacity:0, duration:.6, ease:'power3.out' }, '-=.4')
-  .from('.scroll-indicator', { opacity:0, duration:.6 }, '-=.2');
-/* ═══ SECTION FADE-INS ═══ */
-gsap.utils.toArray('.about-content,.about-stats').forEach(el => {
-  gsap.from(el, { y:40, opacity:0, duration:.8, scrollTrigger:{ trigger:el, start:'top 85%', toggleActions:'play none none reverse' }});
-});
-gsap.from('.projects-header', { y:30, opacity:0, duration:.7, scrollTrigger:{ trigger:'#projects-wrapper', start:'top 70%', toggleActions:'play none none reverse' }});
-gsap.from('.stack-label,.stack-heading', { y:30, opacity:0, duration:.7, stagger:.15, scrollTrigger:{ trigger:'#tech-stack', start:'top 75%', toggleActions:'play none none reverse' }});
-gsap.from('.terminal', { y:50, opacity:0, duration:.8, scrollTrigger:{ trigger:'#contact', start:'top 80%', toggleActions:'play none none reverse' }});
+      renderer.render(scene, camera);
+    }
+    animate();
 
-/* ═══ HORIZONTAL SCROLL ═══ */
-let hST = null;
-function initHScroll() {
-  if (hST) hST.kill();
-  const track = document.getElementById('projects-track');
-  const wrap = document.getElementById('projects-wrapper');
-  if (!track || !wrap) return;
-  const tw = track.scrollWidth, vw = window.innerWidth;
-  const travel = Math.max(0, tw - vw);
-  if (travel <= 0) return;
-  gsap.set(track, { x: 0 });
-  hST = gsap.to(track, { x: -travel, ease:'none', scrollTrigger:{ trigger:wrap, start:'top top', end:()=>`+=${travel}`, pin:true, scrub:1, anticipatePin:1, invalidateOnRefresh:true }});
-}
-
-/* ═══════════════════════════════════════════
-   ANIMATION LOOP
-   All visual updates happen here via lerp.
-   ═══════════════════════════════════════════ */
-const clock = new THREE.Clock();
-function animate() {
-  requestAnimationFrame(animate);
-  const t = clock.getElapsedTime();
-  const pos = pGeo.attributes.position.array;
-/* ── Lerp all state values toward targets ── */
-  C.pDisp = lerp(C.pDisp, T.pDisp, LERP);
-  C.pOp = lerp(C.pOp, T.pOp, LERP);
-  C.hZ = lerp(C.hZ, T.hZ, LERP);
-  C.hOp = lerp(C.hOp, T.hOp, LERP);
-  C.hSep = lerp(C.hSep, T.hSep, LERP);
-  C.eX = lerp(C.eX, T.eX, LERP);
-  C.eZ = lerp(C.eZ, T.eZ, LERP);
-  C.eOp = lerp(C.eOp, T.eOp, LERP);
-  C.nZ = lerp(C.nZ, T.nZ, LERP);
-  C.nOp = lerp(C.nOp, T.nOp, LERP);
-  C.cX = lerp(C.cX, T.cX, LERP);
-  C.cY = lerp(C.cY, T.cY, LERP);
-
-  /* ── Particles: blend wave ↔ pipeline ── */
-  const disp = C.pDisp;
-  for (let i = 0; i < PC; i++) {
-    const bx = bX[i], bz = bZ[i];
-    /* Wave position */
-    const wAmp = 0.5 * (1 - disp);
-    const wave = Math.sin(bx*2.5 + t*.8) * Math.cos(bz*2.5 + t*.6) * wAmp;
-    const wx = bx, wy = wave, wz = bz;
-    /* Pipeline position */
-    const px = piX[i], py = piY[i] + Math.sin(t*2 + i*.05)*.08, pz = 0;
-    /* Blend */
-    pos[i*3]   = lerp(wx, px, disp);
-    pos[i*3+1] = lerp(wy, py, disp);
-    pos[i*3+2] = lerp(wz, pz, disp);
-  }
-  pGeo.attributes.position.needsUpdate = true;
-  particles.rotation.y = t * 0.05;
-  pMat.opacity = Math.max(0, C.pOp);
-
-  /* ── Hypercube ── */
-    hyperGrp.position.z = C.hZ;
-  cubes.forEach((c, i) => {
-    c.material.opacity = Math.max(0, (0.4 - i*0.06) * C.hOp);
-    const sep = C.hSep * (i+1) * 0.25;
-    c.position.x = sep * (i%2===0 ? 1 : -1) * 0.6;
-    c.position.y = sep * (i%2===0 ? -0.5 : 0.5) * 0.4;
-    c.position.z = sep * 0.3;
-    c.rotation.x = t * (0.15 + i*0.08);
-    c.rotation.y = t * (0.1 + i*0.06);
-  });
-
-  /* ── Engine Node ── */
-  engGrp.position.x = C.eX;
-  engGrp.position.z = C.eZ;
-  coreM.opacity = Math.max(0, 0.7 * C.eOp);
-  engGrp.children[1].material.opacity = Math.max(0, 0.12 * C.eOp);
-  rings.forEach((r, i) => {
-    r.material.opacity = Math.max(0, (0.4 - i*0.08) * C.eOp);
-  });
-  /* Ring speed with momentum */
-  const boost = 0.012 + scrollVel * 0.00015;
-  ringSpd += (boost - ringSpd) * 0.08;
-  scrollVel *= 0.92;
-  rings.forEach((r, i) => {
-    r.rotation.x += ringSpd * (1 + i*0.4);
-    r.rotation.z += ringSpd * 0.7 * (1 + i*0.3);
-  });
-  engGrp.children[0].rotation.y = t * 0.3;
-
-  /* ── Single Node ── */
-  sNode.position.z = C.nZ;
-  sNode.material.opacity = Math.max(0, 0.9 * C.nOp);
-  sNode.children[0].material.opacity = Math.max(0, 0.1 * C.nOp);
-  const pulse = 0.9 + Math.sin(t*3)*0.15;
-  sNode.scale.setScalar(pulse);
-  sNode.children[0].scale.setScalar(1 + Math.sin(t*2)*0.3);
-
-  /* ── Camera ── */
-  camera.position.x = C.cX;
-  camera.position.y = C.cY;
-  camera.lookAt(0, 0, 0);
-
-  renderer.render(scene, camera);
-}
-
-/* ═══ RESIZE ═══ */
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
-
-/* ═══ INIT ═══ */
-renderAll(appData);
-animate();
-setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 1200);
-</script>
-</body>
-</html>
+    // Screen resize handler
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body></html>
