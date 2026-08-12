@@ -94,26 +94,28 @@
 
     .btn {
       pointer-events: auto;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      background: rgba(255, 255, 255, 0.08);
+      display: inline-block;
+      opacity: 1 !important;
+      visibility: visible !important;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.12);
       color: white;
       padding: 16px 36px;
       border-radius: 50px;
       cursor: pointer;
       font-size: 15px;
-      font-weight: 500;
+      font-weight: 600;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 10px 30px -10px rgba(168, 85, 247, 0.3);
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.4);
       outline: none;
     }
 
     .btn:hover, .btn:active {
-      transform: translateY(-2px) scale(1.02);
-      background: rgba(255, 255, 255, 0.16);
-      border-color: rgba(255, 255, 255, 0.4);
-      box-shadow: 0 15px 35px -5px rgba(236, 72, 153, 0.4);
+      transform: scale(1.04);
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.5);
     }
 
     .message {
@@ -123,14 +125,13 @@
       padding: clamp(25px, 6vw, 40px);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 32px;
-      background: rgba(15, 10, 30, 0.55);
+      background: rgba(15, 10, 30, 0.65);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
       box-shadow: 
         0 30px 80px rgba(0, 0, 0, 0.6),
         inset 0 1px 1px rgba(255, 255, 255, 0.2);
       text-align: center;
-      transform: translateY(20px);
     }
 
     .message .emoji {
@@ -214,6 +215,9 @@
 
 <body>
 
+  <!-- Audio Element for Khat by Avnot Ahuja -->
+  <audio id="bgAudio" loop src="khat.mp3"></audio>
+
   <canvas id="webgl"></canvas>
   <div class="overlay"></div>
 
@@ -249,7 +253,7 @@
 
 <script>
 /* =========================================================
-   1. THREE.JS — HIGH QUALITY STAR & NEBULA ENGINE
+   1. THREE.JS BACKGROUND (RESPONSIVE PARTICLES)
 ========================================================= */
 
 const canvas = document.getElementById("webgl");
@@ -261,23 +265,21 @@ camera.position.z = 8;
 const renderer = new THREE.WebGLRenderer({
   canvas,
   antialias: true,
-  alpha: true,
-  powerPreference: "high-performance"
+  alpha: true
 });
 
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-// Particle Stars Creation
-const starCount = window.innerWidth < 600 ? 2500 : 5000;
+// Stars setup
+const starCount = window.innerWidth < 600 ? 2000 : 4000;
 const positions = new Float32Array(starCount * 3);
 const colors = new Float32Array(starCount * 3);
 
 const colorChoices = [
   new THREE.Color("#ffffff"),
   new THREE.Color("#f472b6"),
-  new THREE.Color("#c084fc"),
-  new THREE.Color("#60a5fa")
+  new THREE.Color("#c084fc")
 ];
 
 for (let i = 0; i < starCount; i++) {
@@ -310,78 +312,24 @@ const material = new THREE.PointsMaterial({
 const stars = new THREE.Points(geometry, material);
 scene.add(stars);
 
-// Glowing Center Sphere
-const glowGeo = new THREE.SphereGeometry(1.8, 32, 32);
-const glowMat = new THREE.MeshBasicMaterial({
-  color: 0x8b5cf6,
-  transparent: true,
-  opacity: 0.08
-});
-const glow = new THREE.Mesh(glowGeo, glowMat);
-scene.add(glow);
-
-// Mouse/Touch Interactive Motion
-let targetX = 0, targetY = 0;
-let mouseX = 0, mouseY = 0;
-
-function handlePointerMove(e) {
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  
-  mouseX = (clientX / window.innerWidth - 0.5) * 2;
-  mouseY = (clientY / window.innerHeight - 0.5) * 2;
-}
-
-window.addEventListener("mousemove", handlePointerMove);
-window.addEventListener("touchmove", handlePointerMove, { passive: true });
-
 // Animation Loop
-const clock = new THREE.Clock();
-
 function animate() {
   requestAnimationFrame(animate);
-  const elapsedTime = clock.getElapsedTime();
-
-  stars.rotation.y = elapsedTime * 0.02;
-  stars.rotation.x = elapsedTime * 0.01;
-
-  glow.scale.setScalar(1 + Math.sin(elapsedTime * 1.5) * 0.1);
-
-  targetX += (mouseX * 0.4 - targetX) * 0.05;
-  targetY += (-mouseY * 0.4 - targetY) * 0.05;
-
-  camera.position.x = targetX;
-  camera.position.y = targetY;
-  camera.lookAt(scene.position);
-
+  stars.rotation.y += 0.0015;
+  stars.rotation.x += 0.0005;
   renderer.render(scene, camera);
 }
 animate();
 
-// Resize Handler
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 });
 
 
 /* =========================================================
-   2. GSAP INTRO ANIMATIONS
-========================================================= */
-
-const tl = gsap.timeline();
-
-tl.from(".small", { opacity: 0, y: 20, duration: 1, ease: "power3.out" })
-  .from("h1", { opacity: 0, scale: 0.8, y: 30, duration: 1.2, ease: "power4.out" }, "-=0.6")
-  .from(".subtitle", { opacity: 0, y: 20, duration: 0.8, ease: "power3.out" }, "-=0.6")
-  .from(".btn", { opacity: 0, scale: 0.8, y: 20, duration: 0.8, ease: "back.out(1.7)" }, "-=0.4")
-  .from(".hint", { opacity: 0, duration: 0.6 }, "-=0.2");
-
-
-/* =========================================================
-   3. SURPRISE BUTTON & CELEBRATION
+   2. INSTANT SURPRISE BUTTON & CELEBRATION
 ========================================================= */
 
 const button = document.getElementById("surpriseBtn");
@@ -389,34 +337,31 @@ const intro = document.getElementById("intro");
 const message = document.getElementById("message");
 
 button.addEventListener("click", () => {
-  // Toggle music on surprise button click if not playing
-  if (!audioPlaying) playAmbientAudio();
+  // Play song on button click
+  playAudio();
 
-  gsap.to(intro, {
-    opacity: 0,
-    scale: 0.9,
-    y: -20,
-    duration: 0.6,
-    ease: "power3.in",
-    onComplete: () => {
-      intro.style.display = "none";
-      message.style.display = "block";
-
-      gsap.to(message, {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration: 1,
-        ease: "back.out(1.4)"
-      });
-    }
-  });
+  // Instant Hide Intro & Fast Show Message
+  if (window.gsap) {
+    gsap.to(intro, {
+      opacity: 0,
+      duration: 0.2,
+      onComplete: () => {
+        intro.style.display = "none";
+        message.style.display = "block";
+        gsap.to(message, { opacity: 1, duration: 0.3 });
+      }
+    });
+  } else {
+    intro.style.display = "none";
+    message.style.display = "block";
+    message.style.opacity = "1";
+  }
 
   createCelebration();
 });
 
 function createCelebration() {
-  const count = window.innerWidth < 600 ? 35 : 70;
+  const count = window.innerWidth < 600 ? 30 : 60;
   const icons = ["♥", "✦", "✨", "🌸"];
 
   for (let i = 0; i < count; i++) {
@@ -427,98 +372,60 @@ function createCelebration() {
     el.style.left = Math.random() * 100 + "vw";
     el.style.top = "105vh";
     el.style.fontSize = (12 + Math.random() * 20) + "px";
-    el.style.color = ["#f472b6", "#c084fc", "#ffffff", "#fbcfe8"][Math.floor(Math.random() * 4)];
+    el.style.color = ["#f472b6", "#c084fc", "#ffffff"][Math.floor(Math.random() * 3)];
 
     document.body.appendChild(el);
 
-    gsap.to(el, {
-      y: -(window.innerHeight * 1.2),
-      x: (Math.random() - 0.5) * 300,
-      rotation: Math.random() * 360,
-      opacity: 1,
-      duration: 3 + Math.random() * 2,
-      delay: Math.random() * 0.6,
-      ease: "power1.out",
-      onComplete: () => el.remove()
-    });
+    if (window.gsap) {
+      gsap.to(el, {
+        y: -(window.innerHeight * 1.2),
+        x: (Math.random() - 0.5) * 200,
+        rotation: Math.random() * 360,
+        opacity: 1,
+        duration: 2.5 + Math.random() * 1.5,
+        delay: Math.random() * 0.4,
+        ease: "power1.out",
+        onComplete: () => el.remove()
+      });
+    } else {
+      setTimeout(() => el.remove(), 3000);
+    }
   }
 }
 
 
 /* =========================================================
-   4. CONTINUOUS AMBIENT MUSIC SYNTHESIZER
+   3. REAL MP3 AUDIO PLAYER (KHAT BY AVNOT AHUJA)
 ========================================================= */
 
-let audioCtx = null;
-let audioPlaying = false;
+const audio = document.getElementById("bgAudio");
 const musicBtn = document.getElementById("musicBtn");
+let isPlaying = false;
 
-function playAmbientAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-
-  if (!audioPlaying) {
-    // Synth Chords Pad (Ethereal Chord)
-    const freqs = [261.63, 329.63, 392.00, 493.88]; // C maj7 chord notes
-    
-    freqs.forEach((freq, idx) => {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = "sine";
-      osc.frequency.value = freq;
-
-      // Soft LFO modulation for breathing sound
-      const lfo = audioCtx.createOscillator();
-      lfo.frequency.value = 0.2 + idx * 0.05;
-      const lfoGain = audioCtx.createGain();
-      lfoGain.gain.value = 0.005;
-      lfo.connect(lfoGain.gain);
-
-      gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.015, audioCtx.currentTime + 3);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      lfo.start();
-      
-      musicBtn.dataOscs = musicBtn.dataOscs || [];
-      musicBtn.dataOscs.push({ osc, gain });
-    });
-
-    audioPlaying = true;
-    musicBtn.classList.add("active");
+function playAudio() {
+  audio.play().then(() => {
+    isPlaying = true;
     musicBtn.innerHTML = "❙❙";
+    musicBtn.classList.add("active");
+  }).catch(e => {
+    console.log("Audio play blocked until user gesture:", e);
+  });
+}
+
+musicBtn.addEventListener("click", () => {
+  if (isPlaying) {
+    audio.pause();
+    musicBtn.innerHTML = "♪";
+    musicBtn.classList.remove("active");
   } else {
-    stopAmbientAudio();
+    playAudio();
   }
-}
-
-function stopAmbientAudio() {
-  if (musicBtn.dataOscs) {
-    musicBtn.dataOscs.forEach(({ osc, gain }) => {
-      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 1);
-      setTimeout(() => osc.stop(), 1000);
-    });
-    musicBtn.dataOscs = [];
-  }
-  audioPlaying = false;
-  musicBtn.classList.remove("active");
-  musicBtn.innerHTML = "♪";
-}
-
-musicBtn.addEventListener("click", playAmbientAudio);
+  isPlaying = !isPlaying;
+});
 
 
 /* =========================================================
-   5. CLICK SPARK EFFECT
+   4. CLICK SPARK EFFECT
 ========================================================= */
 
 document.addEventListener("click", (e) => {
@@ -539,17 +446,19 @@ document.addEventListener("click", (e) => {
 
   document.body.appendChild(spark);
 
-  gsap.to(spark, {
-    y: -40,
-    scale: 1.5,
-    opacity: 0,
-    duration: 0.7,
-    ease: "power2.out",
-    onComplete: () => spark.remove()
-  });
+  if (window.gsap) {
+    gsap.to(spark, {
+      y: -30,
+      scale: 1.4,
+      opacity: 0,
+      duration: 0.6,
+      onComplete: () => spark.remove()
+    });
+  } else {
+    setTimeout(() => spark.remove(), 600);
+  }
 });
 </script>
 
 </body>
 </html>
-
