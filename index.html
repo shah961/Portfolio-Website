@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Birthday Esha ✨</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Three.js & GSAP via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       CSS STYLES & GLASSMORPHISM
+       ========================================================================== */
+    :root {
+      --bg-dark: #060713;
+      --accent-pink: #f472b6;
+      --accent-purple: #c084fc;
+      --accent-blue: #818cf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --glass-bg: rgba(15, 23, 42, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --glass-glow: rgba(192, 132, 252, 0.15);
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      position: relative;
+    }
+
+    /* WebGL Canvas */
+    #webgl-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Main Container */
+    #app {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    /* Audio Control Toggle */
+    .audio-btn {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .audio-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(192, 132, 252, 0.3);
+    }
+
+    /* Screens Base */
+    .screen {
+      position: absolute;
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      padding: 1rem;
+    }
+
+    .screen.active {
+      pointer-events: auto;
+    }
+
+    /* Typography Defaults */
+    h1, h2 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .title-large {
+      font-size: clamp(2.5rem, 8vw, 4.2rem);
+      background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 40%, var(--accent-purple) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 30px rgba(192, 132, 252, 0.2);
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 3.5vw, 1.25rem);
+      color: var(--text-muted);
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 2.2rem;
+      max-width: 480px;
+    }
+
+    .accent-text {
+      color: var(--accent-pink);
+      font-weight: 400;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      position: relative;
+      padding: 0.95rem 2.2rem;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(244, 114, 182, 0.2), rgba(192, 132, 252, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50px;
+      cursor: pointer;
+      outline: none;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 25px rgba(192, 132, 252, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 8px 35px rgba(192, 132, 252, 0.35), inset 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    /* Glassmorphic Card (Screen 3) */
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: clamp(1.8rem, 5vw, 2.8rem);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      width: 100%;
+      text-align: left;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .glass-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent, rgba(192,132,252,0.2));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 1.2rem;
+      font-style: italic;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 0.8rem;
+    }
+
+    .message-line {
+      font-size: clamp(0.95rem, 3vw, 1.08rem);
+      line-height: 1.75;
+      color: #e2e8f0;
+      margin-bottom: 0.9rem;
+      opacity: 0;
+      transform: translateY(12px);
+      font-weight: 300;
+    }
+
+    .message-line:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Decorative Floating Glow Elements */
+    .glow-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    .glow-1 {
+      width: 300px; height: 300px;
+      background: var(--accent-purple);
+      top: 10%; left: 15%;
+    }
+
+    .glow-2 {
+      width: 250px; height: 250px;
+      background: var(--accent-pink);
+      bottom: 15%; right: 10%;
+    }
+
+    /* Screen 2 Visual Accent Ring */
+    .visual-container {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 1.8rem auto;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .visual-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px stroke rgba(255, 255, 255, 0.15);
+      border-top-color: var(--accent-pink);
+      border-bottom-color: var(--accent-purple);
+      animation: spin 12s linear infinite;
+    }
+
+    .visual-heart {
+      font-size: 2.5rem;
+      filter: drop-shadow(0 0 15px rgba(244, 114, 182, 0.6));
+      animation: pulse 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.92); opacity: 0.8; }
+      100% { transform: scale(1.08); opacity: 1; }
+    }
+
+    /* Responsive Tweaks */
+    @media (max-height: 680px) {
+      .subtitle { margin-bottom: 1.5rem; }
+      .glass-card { padding: 1.4rem; margin-bottom: 1.2rem; }
+      .title-large { margin-bottom: 0.6rem; }
+      .visual-container { width: 100px; height: 100px; margin-bottom: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Atmospheric Ambient Background Orbs -->
+  <div class="glow-orb glow-1"></div>
+  <div class="glow-orb glow-2"></div>
+
+  <!-- WebGL Canvas for Three.js -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Audio Toggle -->
+  <button class="audio-btn" id="audioToggle" aria-label="Toggle Sound">
+    <span id="audioIcon">🎵</span>
+  </button>
+
+  <!-- Main Experience Wrapper -->
+  <main id="app">
+
+    <!-- SCREEN 1: INTRO -->
+    <section class="screen" id="screen1">
+      <h1 class="title-large" id="s1-heading">Hey, Esha...</h1>
+      <p class="subtitle" id="s1-sub">Today is a little special ✨</p>
+      <button class="btn-primary" id="btn1">Open Your Surprise</button>
+    </section>
+
+    <!-- SCREEN 2: BIRTHDAY REVEAL -->
+    <section class="screen" id="screen2">
+      <div class="visual-container" id="s2-visual">
+        <div class="visual-ring"></div>
+        <div class="visual-heart">✨</div>
+      </div>
+      <h1 class="title-large" id="s2-title">Happy Birthday 🎂</h1>
+      <p class="subtitle" id="s2-sub">To someone who makes ordinary days feel a little brighter.</p>
+      <button class="btn-primary" id="btn2">Read Message →</button>
+    </section>
+
+    <!-- SCREEN 3: PERSONAL MESSAGE -->
+    <section class="screen" id="screen3">
+      <div class="glass-card" id="s3-card">
+        <h2 class="card-title">Just a little message...</h2>
+        <div class="card-body">
+          <p class="message-line">Happy Birthday! 🎂</p>
+          <p class="message-line">I hope this year brings you lots of happiness, beautiful moments, and reasons to smile.</p>
+          <p class="message-line">You deserve a really amazing year ahead.</p>
+          <p class="message-line">And honestly... I'm glad I got to know you. ✨</p>
+        </div>
+      </div>
+      <button class="btn-primary" id="btn3">One last thing ✨</button>
+    </section>
+
+    <!-- SCREEN 4: FINAL MOMENT -->
+    <section class="screen" id="screen4">
+      <h1 class="title-large" id="s4-title">One more thing...</h1>
+      <p class="subtitle" id="s4-sub" style="font-size: 1.35rem; color: #fff; font-family: var(--font-serif); font-style: italic;">
+        Keep smiling. It suits you. ✨
+      </p>
+      <h2 id="s4-final" style="font-size: 2.2rem; margin-bottom: 2rem; opacity: 0; background: linear-gradient(135deg, #fff, var(--accent-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Happy Birthday <span class="accent-text">Esha</span> 💫
+      </h2>
+      <button class="btn-primary" id="btn4" style="opacity: 0;">Replay ✦</button>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       JAVASCRIPT LOGIC
+       ========================================================================== -->
+  <script>
+    /* ------------------------------------------------------------------------
+       1. CONFIGURATION & CONSTANTS
+       ------------------------------------------------------------------------ */
+    const CONFIG = {
+      name: "Esha",
+      colors: {
+        bg: 0x060713,
+        star1: 0xffffff,
+        star2: 0xf472b6,
+        star3: 0xc084fc,
+        star4: 0x818cf8
+      },
+      particles: {
+        countDesktop: 2200,
+        countMobile: 900
+      }
+    };
+
+    /* ------------------------------------------------------------------------
+       2. WEB AUDIO API SYNTHESIZER (No external audio file dependencies)
+       ------------------------------------------------------------------------ */
+    class AudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.isPlaying = false;
+        this.gainNode = null;
+        this.oscillators = [];
+      }
+
+      init() {
+        if (this.ctx) return;
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioContext();
+
+        this.gainNode = this.ctx.createGain();
+        this.gainNode.gain.setValueAtTime(0.001, this.ctx.currentTime);
+        this.gainNode.connect(this.ctx.destination);
+
+        // Gentle Ambient Pentatonic Chord Notes (Hz)
+        const freqs = [130.81, 196.00, 261.63, 329.63, 392.00, 523.25]; // C3, G3, C4, E4, G4, C5
+        
+        freqs.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const oscGain = this.ctx.createGain();
+
+          osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+          // Subtle LFO for slight natural pitch drift
+          const lfo = this.ctx.createOscillator();
+          const lfoGain = this.ctx.createGain();
+          lfo.frequency.value = 0.15 + idx * 0.05;
+          lfoGain.gain.value = 0.4;
+          lfo.connect(osc.frequency);
+          lfo.start();
+
+          oscGain.gain.value = 0.08 / freqs.length;
+          osc.connect(oscGain);
+          oscGain.connect(this.gainNode);
+          osc.start();
+          this.oscillators.push(osc);
+        });
+      }
+
+      toggle() {
+        if (!this.ctx) this.init();
+
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+
+        if (this.isPlaying) {
+          this.gainNode.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 1.2);
+          this.isPlaying = false;
+        } else {
+          this.gainNode.gain.cancelScheduledValues(this.ctx.currentTime);
+          this.gainNode.gain.setValueAtTime(this.gainNode.gain.value, this.ctx.currentTime);
+          this.gainNode.gain.exponentialRampToValueAtTime(0.18, this.ctx.currentTime + 2.0);
+          this.isPlaying = true;
+        }
+        return this.isPlaying;
+      }
+    }
+
+    const audio = new AudioEngine();
+    const audioBtn = document.getElementById('audioToggle');
+    const audioIcon = document.getElementById('audioIcon');
+
+    audioBtn.addEventListener('click', () => {
+      const active = audio.toggle();
+      audioIcon.textContent = active ? '✨' : '🎵';
+      audioBtn.style.borderColor = active ? 'rgba(244, 114, 182, 0.6)' : 'var(--glass-border)';
+    });
+
+    /* ------------------------------------------------------------------------
+       3. THREE.JS SCENE & PARTICLES SYSTEM
+       ------------------------------------------------------------------------ */
+    class SpaceScene {
+      constructor() {
+        this.container = document.getElementById('webgl-canvas');
+        this.isMobile = window.innerWidth < 768;
+        this.particleCount = this.isMobile ? CONFIG.particles.countMobile : CONFIG.particles.countDesktop;
+        
+        this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+        this.burstParticles = [];
+
+        this.init();
+        this.createParticles();
+        this.createCentralRing();
+        this.addEvents();
+        this.animate();
+      }
+
+      init() {
+        this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.FogExp2(CONFIG.colors.bg, 0.012);
+
+        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.position.z = 50;
+
+        this.renderer = new THREE.WebGLRenderer({
+          canvas: this.container,
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance"
+        });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      }
+
+      // Generate radial gradient texture procedurally to prevent reliance on external PNGs
+      createParticleTexture() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+
+        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.25, 'rgba(244, 114, 182, 0.8)');
+        gradient.addColorStop(0.55, 'rgba(192, 132, 252, 0.3)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 64, 64);
+
+        return new THREE.CanvasTexture(canvas);
+      }
+
+      createParticles() {
+        this.geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(this.particleCount * 3);
+        const colors = new Float32Array(this.particleCount * 3);
+        const scales = new Float32Array(this.particleCount);
+
+        const colorPalette = [
+          new THREE.Color(CONFIG.colors.star1),
+          new THREE.Color(CONFIG.colors.star2),
+          new THREE.Color(CONFIG.colors.star3),
+          new THREE.Color(CONFIG.colors.star4)
+        ];
+
+        for (let i = 0; i < this.particleCount; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * 120;
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 120;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 120;
+
+          const col = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+          colors[i * 3] = col.r;
+          colors[i * 3 + 1] = col.g;
+          colors[i * 3 + 2] = col.b;
+
+          scales[i] = Math.random() * 0.8 + 0.2;
+        }
+
+        this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        this.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+        this.material = new THREE.PointsMaterial({
+          size: 1.4,
+          map: this.createParticleTexture(),
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          vertexColors: true
+        });
+
+        this.particleSystem = new THREE.Points(this.geometry, this.material);
+        this.scene.add(this.particleSystem);
+      }
+
+      createCentralRing() {
+        // Subtle ambient rotating 3D particle torus ring in background
+        const ringGeo = new THREE.TorusGeometry(12, 0.3, 16, 100);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: CONFIG.colors.star3,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.15
+        });
+        this.ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        this.ringMesh.position.z = -10;
+        this.scene.add(this.ringMesh);
+      }
+
+      triggerBurst() {
+        const count = this.isMobile ? 80 : 160;
+        const burstGeo = new THREE.BufferGeometry();
+        const positions = new Float32Array(count * 3);
+        const velocities = [];
+
+        for (let i = 0; i < count; i++) {
+          positions[i * 3] = 0;
+          positions[i * 3 + 1] = 0;
+          positions[i * 3 + 2] = 10;
+
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.random() * Math.PI;
+          const speed = Math.random() * 0.4 + 0.2;
+
+          velocities.push(
+            Math.sin(phi) * Math.cos(theta) * speed,
+            Math.sin(phi) * Math.sin(theta) * speed,
+            Math.cos(phi) * speed
+          );
+        }
+
+        burstGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const burstMat = new THREE.PointsMaterial({
+          size: 2.2,
+          map: this.createParticleTexture(),
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          color: 0xf472b6
+        });
+
+        const pSystem = new THREE.Points(burstGeo, burstMat);
+        this.scene.add(pSystem);
+        this.burstParticles.push({ system: pSystem, velocities: velocities, life: 1.0 });
+      }
+
+      addEvents() {
+        window.addEventListener('resize', () => {
+          this.camera.aspect = window.innerWidth / window.innerHeight;
+          this.camera.updateProjectionMatrix();
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        const handlePointer = (x, y) => {
+          this.mouse.targetX = (x / window.innerWidth - 0.5) * 2;
+          this.mouse.targetY = -(y / window.innerHeight - 0.5) * 2;
+        };
+
+        window.addEventListener('mousemove', (e) => handlePointer(e.clientX, e.clientY));
+        window.addEventListener('touchmove', (e) => {
+          if (e.touches.length > 0) {
+            handlePointer(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, { passive: true });
+      }
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+
+        // Smooth mouse damping
+        this.mouse.x += (this.mouse.targetX - this.mouse.x) * 0.04;
+        this.mouse.y += (this.mouse.targetY - this.mouse.y) * 0.04;
+
+        // Slow background star rotation
+        this.particleSystem.rotation.y += 0.0008;
+        this.particleSystem.rotation.x = this.mouse.y * 0.15;
+        this.particleSystem.rotation.y += this.mouse.x * 0.15;
+
+        // Central torus subtle motion
+        this.ringMesh.rotation.x += 0.003;
+        this.ringMesh.rotation.y += 0.005;
+
+        // Animate dynamic bursts
+        for (let b = this.burstParticles.length - 1; b >= 0; b--) {
+          const burst = this.burstParticles[b];
+          const positions = burst.system.geometry.attributes.position.array;
+
+          for (let i = 0; i < positions.length / 3; i++) {
+            positions[i * 3] += burst.velocities[i * 3];
+            positions[i * 3 + 1] += burst.velocities[i * 3 + 1];
+            positions[i * 3 + 2] += burst.velocities[i * 3 + 2];
+          }
+
+          burst.system.geometry.attributes.position.needsUpdate = true;
+          burst.life -= 0.015;
+          burst.system.material.opacity = Math.max(0, burst.life);
+
+          if (burst.life <= 0) {
+            this.scene.remove(burst.system);
+            burst.system.geometry.dispose();
+            burst.system.material.dispose();
+            this.burstParticles.splice(b, 1);
+          }
+        }
+
+        this.renderer.render(this.scene, this.camera);
+      }
+    }
+
+    // Initialize Space Visual Scene
+    const space = new SpaceScene();
+
+    /* ------------------------------------------------------------------------
+       4. GSAP TIMELINE & SCENE TRANSITIONS
+       ------------------------------------------------------------------------ */
+    const screens = [
+      document.getElementById('screen1'),
+      document.getElementById('screen2'),
+      document.getElementById('screen3'),
+      document.getElementById('screen4')
+    ];
+
+    let currentScreenIndex = 0;
+
+    function showScreen(targetIndex) {
+      const current = screens[currentScreenIndex];
+      const next = screens[targetIndex];
+
+      const tl = gsap.timeline();
+
+      // Transition Current Screen Out
+      tl.to(current, {
+        opacity: 0,
+        scale: 0.94,
+        filter: "blur(10px)",
+        duration: 0.8,
+        ease: "power3.inOut",
+        onComplete: () => {
+          current.classList.remove('active');
+          current.style.visibility = 'hidden';
+        }
+      });
+
+      // Camera shift effect on transition
+      gsap.to(space.camera.position, {
+        z: 50 - targetIndex * 5,
+        duration: 1.5,
+        ease: "power2.inOut"
+      });
+
+      // Transition Next Screen In
+      tl.to(next, {
+        onStart: () => {
+          next.classList.add('active');
+          next.style.visibility = 'visible';
+        },
+        opacity: 1,
+        scale: 1,
+        filter: "blur(0px)",
+        duration: 1.0,
+        ease: "power3.out"
+      }, "-=0.3");
+
+      // Trigger scene specific animations
+      if (targetIndex === 1) {
+        space.triggerBurst();
+        tl.from('#s2-visual', { scale: 0, rotation: -180, duration: 1.2, ease: "back.out(1.7)" }, "-=0.6");
+        tl.from('#s2-title', { y: 20, opacity: 0, duration: 0.8 }, "-=0.8");
+        tl.from('#s2-sub', { y: 15, opacity: 0, duration: 0.8 }, "-=0.6");
+        tl.from('#btn2', { scale: 0.8, opacity: 0, duration: 0.6 }, "-=0.4");
+      } 
+      else if (targetIndex === 2) {
+        tl.from('#s3-card', { y: 30, opacity: 0, duration: 0.8, ease: "power2.out" }, "-=0.6");
+        tl.to('.message-line', {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.45,
+          ease: "power2.out"
+        }, "-=0.2");
+        tl.from('#btn3', { opacity: 0, y: 15, duration: 0.6 }, "+=0.2");
+      }
+      else if (targetIndex === 3) {
+        space.triggerBurst();
+        tl.from('#s4-title', { opacity: 0, y: 20, duration: 1.0 }, "-=0.4");
+        tl.from('#s4-sub', { opacity: 0, y: 20, duration: 1.0 }, "+=0.3");
+        tl.to('#s4-final', {
+          opacity: 1,
+          scale: 1.05,
+          duration: 1.2,
+          ease: "power2.out",
+          onStart: () => space.triggerBurst()
+        }, "+=0.8");
+        tl.to('#btn4', { opacity: 1, y: 0, duration: 0.8 }, "+=0.4");
+      }
+
+      currentScreenIndex = targetIndex;
+    }
+
+    /* ------------------------------------------------------------------------
+       5. INITIALIZATION & EVENT LISTENERS
+       ------------------------------------------------------------------------ */
+    window.addEventListener('load', () => {
+      // Intro Initial Entrance
+      screens[0].classList.add('active');
+      screens[0].style.visibility = 'visible';
+
+      const initTL = gsap.timeline();
+      initTL.to('#s1-heading', { opacity: 1, y: 0, duration: 1.2, ease: "power3.out", delay: 0.3 })
+            .to('#s1-sub', { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" }, "-=0.6")
+            .fromTo('#btn1', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.5)" }, "-=0.4");
+
+      // Floating continuous ambient motion for buttons
+      gsap.to('.btn-primary', {
+        y: "-=4",
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+      });
+    });
+
+    // Navigation Click Handlers
+    document.getElementById('btn1').addEventListener('click', () => showScreen(1));
+    document.getElementById('btn2').addEventListener('click', () => showScreen(2));
+    document.getElementById('btn3').addEventListener('click', () => showScreen(3));
+
+    // Replay Button Event Handler
+    document.getElementById('btn4').addEventListener('click', () => {
+      gsap.to('.message-line', { opacity: 0, y: 12, duration: 0.1 });
+      gsap.to('#s4-final', { opacity: 0, duration: 0.1 });
+      gsap.to('#btn4', { opacity: 0, duration: 0.1 });
+      showScreen(0);
+    });
+
+    // Tab Visibility Optimization
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        space.renderer.setAnimationLoop(null);
+      } else {
+        space.animate();
+      }
+    });
+  </script>
+</body>
+</html>
