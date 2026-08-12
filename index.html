@@ -95,8 +95,6 @@
     .btn {
       pointer-events: auto;
       display: inline-block;
-      opacity: 1 !important;
-      visibility: visible !important;
       border: 1px solid rgba(255, 255, 255, 0.3);
       background: rgba(255, 255, 255, 0.12);
       color: white;
@@ -115,7 +113,6 @@
     .btn:hover, .btn:active {
       transform: scale(1.04);
       background: rgba(255, 255, 255, 0.22);
-      border-color: rgba(255, 255, 255, 0.5);
     }
 
     .message {
@@ -128,9 +125,7 @@
       background: rgba(15, 10, 30, 0.65);
       backdrop-filter: blur(30px);
       -webkit-backdrop-filter: blur(30px);
-      box-shadow: 
-        0 30px 80px rgba(0, 0, 0, 0.6),
-        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
       text-align: center;
     }
 
@@ -138,7 +133,6 @@
       font-size: clamp(40px, 10vw, 55px);
       margin-bottom: 12px;
       display: inline-block;
-      filter: drop-shadow(0 0 15px rgba(244, 114, 182, 0.4));
     }
 
     .message h2 {
@@ -167,14 +161,6 @@
       font-weight: 600;
     }
 
-    .hint {
-      margin-top: 24px;
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
     .heart {
       position: fixed;
       z-index: 10;
@@ -182,7 +168,6 @@
       user-select: none;
     }
 
-    /* Music Floating Button */
     .music {
       position: fixed;
       z-index: 20;
@@ -215,7 +200,6 @@
 
 <body>
 
-  <!-- Audio Element for Khat by Avnot Ahuja -->
   <audio id="bgAudio" loop src="khat.mp3"></audio>
 
   <canvas id="webgl"></canvas>
@@ -225,7 +209,6 @@
 
   <main class="content">
 
-    <!-- Screen 1: Intro -->
     <section class="screen" id="intro">
       <div class="small">A little something for</div>
       <h1>Esha</h1>
@@ -234,10 +217,8 @@
         so I created this little corner of the universe for you. ✨
       </p>
       <button class="btn" id="surpriseBtn">Open Surprise ✨</button>
-      <div class="hint">Tap anywhere for magic • Sound on 🎧</div>
     </section>
 
-    <!-- Screen 2: Birthday Message Card -->
     <section class="message" id="message">
       <div class="emoji">🎂✨</div>
       <h2>Happy Birthday!</h2>
@@ -252,27 +233,17 @@
   </main>
 
 <script>
-/* =========================================================
-   1. THREE.JS BACKGROUND (RESPONSIVE PARTICLES)
-========================================================= */
-
+// 1. BACKGROUND PARTICLES ENGINE
 const canvas = document.getElementById("webgl");
 const scene = new THREE.Scene();
-
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 8;
 
-const renderer = new THREE.WebGLRenderer({
-  canvas,
-  antialias: true,
-  alpha: true
-});
-
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 
-// Stars setup
-const starCount = window.innerWidth < 600 ? 2000 : 4000;
+const starCount = window.innerWidth < 600 ? 2000 : 3500;
 const positions = new Float32Array(starCount * 3);
 const colors = new Float32Array(starCount * 3);
 
@@ -312,11 +283,10 @@ const material = new THREE.PointsMaterial({
 const stars = new THREE.Points(geometry, material);
 scene.add(stars);
 
-// Animation Loop
 function animate() {
   requestAnimationFrame(animate);
-  stars.rotation.y += 0.0015;
-  stars.rotation.x += 0.0005;
+  stars.rotation.y += 0.0012;
+  stars.rotation.x += 0.0004;
   renderer.render(scene, camera);
 }
 animate();
@@ -328,27 +298,33 @@ window.addEventListener("resize", () => {
 });
 
 
-/* =========================================================
-   2. INSTANT SURPRISE BUTTON & CELEBRATION
-========================================================= */
-
+// 2. SURPRISE BUTTON & CELEBRATION LOGIC
 const button = document.getElementById("surpriseBtn");
 const intro = document.getElementById("intro");
 const message = document.getElementById("message");
+const audio = document.getElementById("bgAudio");
+const musicBtn = document.getElementById("musicBtn");
+let isPlaying = false;
 
 button.addEventListener("click", () => {
-  // Play song on button click
-  playAudio();
+  // Play song if paused
+  if (audio.paused) {
+    audio.play().then(() => {
+      isPlaying = true;
+      musicBtn.innerHTML = "❙❙";
+      musicBtn.classList.add("active");
+    }).catch(e => console.log("Playback error:", e));
+  }
 
-  // Instant Hide Intro & Fast Show Message
+  // Smooth screen transition
   if (window.gsap) {
     gsap.to(intro, {
       opacity: 0,
-      duration: 0.2,
+      duration: 0.25,
       onComplete: () => {
         intro.style.display = "none";
         message.style.display = "block";
-        gsap.to(message, { opacity: 1, duration: 0.3 });
+        gsap.to(message, { opacity: 1, duration: 0.35 });
       }
     });
   } else {
@@ -361,7 +337,7 @@ button.addEventListener("click", () => {
 });
 
 function createCelebration() {
-  const count = window.innerWidth < 600 ? 30 : 60;
+  const count = window.innerWidth < 600 ? 30 : 50;
   const icons = ["♥", "✦", "✨", "🌸"];
 
   for (let i = 0; i < count; i++) {
@@ -383,7 +359,7 @@ function createCelebration() {
         rotation: Math.random() * 360,
         opacity: 1,
         duration: 2.5 + Math.random() * 1.5,
-        delay: Math.random() * 0.4,
+        delay: Math.random() * 0.3,
         ease: "power1.out",
         onComplete: () => el.remove()
       });
@@ -394,68 +370,19 @@ function createCelebration() {
 }
 
 
-/* =========================================================
-   3. REAL MP3 AUDIO PLAYER (KHAT BY AVNOT AHUJA)
-========================================================= */
-
-const audio = document.getElementById("bgAudio");
-const musicBtn = document.getElementById("musicBtn");
-let isPlaying = false;
-
-function playAudio() {
-  audio.play().then(() => {
-    isPlaying = true;
-    musicBtn.innerHTML = "❙❙";
-    musicBtn.classList.add("active");
-  }).catch(e => {
-    console.log("Audio play blocked until user gesture:", e);
-  });
-}
-
+// 3. MANUAL AUDIO CONTROLLER
 musicBtn.addEventListener("click", () => {
   if (isPlaying) {
     audio.pause();
     musicBtn.innerHTML = "♪";
     musicBtn.classList.remove("active");
+    isPlaying = false;
   } else {
-    playAudio();
-  }
-  isPlaying = !isPlaying;
-});
-
-
-/* =========================================================
-   4. CLICK SPARK EFFECT
-========================================================= */
-
-document.addEventListener("click", (e) => {
-  if (e.target.tagName === "BUTTON") return;
-
-  const spark = document.createElement("div");
-  spark.innerHTML = "✦";
-  spark.style.cssText = `
-    position: fixed;
-    left: ${e.clientX}px;
-    top: ${e.clientY}px;
-    color: #f472b6;
-    pointer-events: none;
-    z-index: 100;
-    font-size: 18px;
-    transform: translate(-50%, -50%);
-  `;
-
-  document.body.appendChild(spark);
-
-  if (window.gsap) {
-    gsap.to(spark, {
-      y: -30,
-      scale: 1.4,
-      opacity: 0,
-      duration: 0.6,
-      onComplete: () => spark.remove()
-    });
-  } else {
-    setTimeout(() => spark.remove(), 600);
+    audio.play().then(() => {
+      isPlaying = true;
+      musicBtn.innerHTML = "❙❙";
+      musicBtn.classList.add("active");
+    }).catch(e => console.log("Play error:", e));
   }
 });
 </script>
