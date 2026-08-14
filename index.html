@@ -1,393 +1,799 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>For Esha ✨</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, Esha! ✨</title>
+    <!-- Google Fonts import for script and serif body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        /* ==========================================
+           1. CSS VARIABLES & BASE STYLES
+           ========================================== */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #f3e5f5 100%);
+            --paper-bg: #fffdfa;
+            --paper-border: #f48fb1;
+            --envelope-bg: #f8bbd0;
+            --envelope-inside: #f48fb1;
+            --envelope-flap: #f06292;
+            --accent-pink: #ec407a;
+            --text-dark: #4a2c3d;
+            --text-muted: #885970;
+            --shadow-soft: 0 10px 30px rgba(186, 104, 200, 0.15);
+            --shadow-deep: 0 20px 40px rgba(136, 14, 79, 0.2);
+            --font-script: 'Great Vibes', cursive;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Plus Jakarta Sans', sans-serif;
+        }
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #020108;
-      color: white;
-    }
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            font-family: var(--font-body);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px 15px;
+        }
 
-    #webgl {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
+        /* Ambient floating particles canvas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      background: 
-        radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.12), transparent 60%),
-        radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.1), transparent 50%),
-        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1), transparent 50%);
-    }
+        /* Main Container Stage */
+        .stage {
+            position: relative;
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
 
-    .content {
-      position: relative;
-      z-index: 5;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+        /* ==========================================
+           2. INTRO HEADER STYLES
+           ========================================== */
+        .intro-header {
+            text-align: center;
+            margin-bottom: 25px;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
 
-    .screen {
-      width: min(550px, 92vw);
-      text-align: center;
-    }
+        .sub-heading {
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
 
-    .small {
-      font-size: clamp(10px, 2.8vw, 13px);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.65);
-      margin-bottom: 16px;
-      font-weight: 500;
-    }
+        .main-title {
+            font-family: var(--font-script);
+            font-size: 3.5rem;
+            color: var(--accent-pink);
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.05);
+            min-height: 80px;
+            line-height: 1.2;
+        }
 
-    h1 {
-      font-size: clamp(3.5rem, 12vw, 6.5rem);
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: -2px;
-      background: linear-gradient(135deg, #ffffff 0%, #f472b6 50%, #c084fc 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 0 35px rgba(192, 132, 252, 0.3));
-    }
+        /* Music Floating Toggle Pill */
+        .music-control {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--paper-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
 
-    .subtitle {
-      margin: 0 auto 32px;
-      color: rgba(255, 255, 255, 0.78);
-      font-size: clamp(14px, 3.8vw, 17px);
-      line-height: 1.6;
-      font-weight: 300;
-    }
+        .music-control:hover {
+            transform: scale(1.05);
+            background: #ffffff;
+        }
 
-    .btn {
-      pointer-events: auto;
-      display: inline-block;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.12);
-      color: white;
-      padding: 16px 36px;
-      border-radius: 50px;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 600;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      transition: transform 0.2s ease, background 0.2s ease;
-      box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.4);
-      outline: none;
-    }
+        /* ==========================================
+           3. POPUP MODAL STYLES
+           ========================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(74, 44, 61, 0.4);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+        }
 
-    .btn:hover, .btn:active {
-      transform: scale(1.04);
-      background: rgba(255, 255, 255, 0.22);
-    }
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
 
-    .message {
-      display: none;
-      opacity: 0;
-      width: min(520px, 90vw);
-      padding: clamp(25px, 6vw, 40px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 32px;
-      background: rgba(15, 10, 30, 0.65);
-      backdrop-filter: blur(30px);
-      -webkit-backdrop-filter: blur(30px);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-      text-align: center;
-    }
+        .modal-card {
+            background: var(--paper-bg);
+            border-radius: 20px;
+            padding: 35px 25px;
+            text-align: center;
+            max-width: 380px;
+            width: 100%;
+            box-shadow: var(--shadow-deep);
+            border: 1px solid var(--paper-border);
+            animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-    .message .emoji {
-      font-size: clamp(40px, 10vw, 55px);
-      margin-bottom: 12px;
-      display: inline-block;
-    }
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-    .message h2 {
-      font-size: clamp(1.8rem, 6vw, 2.6rem);
-      margin-bottom: 16px;
-      background: linear-gradient(135deg, #fff, #f472b6);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-weight: 700;
-    }
+        .modal-card h2 {
+            font-family: var(--font-script);
+            font-size: 2.8rem;
+            color: var(--accent-pink);
+            margin-bottom: 10px;
+        }
 
-    .message p {
-      color: rgba(255, 255, 255, 0.82);
-      line-height: 1.7;
-      font-size: clamp(13px, 3.5vw, 15px);
-      font-weight: 300;
-    }
+        .modal-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
 
-    .signature {
-      margin-top: 24px;
-      color: #e8c8ff;
-      font-size: 13px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
+        /* ==========================================
+           4. ENVELOPE 3D STRUCTURE
+           ========================================== */
+        .envelope-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 380px;
+            height: 250px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: transform 0.3s ease, opacity 0.5s ease;
+        }
 
-    .heart {
-      position: fixed;
-      z-index: 10;
-      pointer-events: none;
-      user-select: none;
-    }
+        .envelope-wrapper:hover {
+            transform: translateY(-5px);
+        }
 
-    .music {
-      position: fixed;
-      z-index: 20;
-      top: 20px;
-      right: 20px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.08);
-      color: white;
-      cursor: pointer;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      outline: none;
-    }
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: var(--envelope-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow-deep);
+        }
 
-    .music.active {
-      background: rgba(236, 72, 153, 0.25);
-      border-color: rgba(236, 72, 153, 0.5);
-      box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
-    }
-  </style>
+        /* Flap with 3D Rotate */
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            border-left: 190px solid transparent;
+            border-right: 190px solid transparent;
+            border-top: 130px solid var(--envelope-flap);
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out, z-index 0.2s;
+            z-index: 5;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        /* Pocket Overlays */
+        .pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .pocket::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-left: 190px solid #f48fb1;
+            border-top: 125px solid transparent;
+            border-bottom: 125px solid #f48fb1;
+        }
+
+        .pocket::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border-right: 190px solid #f48fb1;
+            border-top: 125px solid transparent;
+            border-bottom: 125px solid #f48fb1;
+        }
+
+        .pocket-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            border-left: 190px solid transparent;
+            border-right: 190px solid transparent;
+            border-bottom: 115px solid #f06292;
+            z-index: 4;
+        }
+
+        /* Heart Seal */
+        .heart-seal {
+            position: absolute;
+            top: 105px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 44px;
+            height: 44px;
+            background: #e91e63;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 6;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        /* ==========================================
+           5. STANDALONE DISPLAYED LETTER PAPER
+           ========================================== */
+        .letter-paper {
+            width: 100%;
+            background: var(--paper-bg);
+            border-radius: 12px;
+            padding: 30px 25px;
+            box-shadow: var(--shadow-deep);
+            border: 1px solid rgba(244, 143, 177, 0.4);
+            background-image: linear-gradient(#f48fb115 1px, transparent 1px);
+            background-size: 100% 28px;
+            display: none;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            margin-top: 10px;
+        }
+
+        .letter-paper.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stage.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .stage.open .heart-seal {
+            opacity: 0;
+            transform: translateX(-50%) scale(0.5);
+        }
+
+        /* Hide Envelope after open sequence */
+        .envelope-wrapper.hide-envelope {
+            opacity: 0;
+            height: 0;
+            margin: 0;
+            pointer-events: none;
+        }
+
+        /* Typography */
+        .letter-content {
+            font-family: var(--font-heading);
+            color: var(--text-dark);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .letter-salutation {
+            font-family: var(--font-script);
+            font-size: 2.3rem;
+            color: var(--accent-pink);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: var(--accent-pink);
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .letter-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 1s ease;
+            font-family: var(--font-body);
+        }
+
+        /* ==========================================
+           6. BUTTONS & CONTROLS
+           ========================================== */
+        .btn-action {
+            background: linear-gradient(135deg, #ec407a 0%, #d81b60 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            font-weight: 500;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(236, 64, 122, 0.3);
+            transition: all 0.3s ease;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(236, 64, 122, 0.4);
+            background: linear-gradient(135deg, #f06292 0%, #e91e63 100%);
+        }
+
+        .btn-replay {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--paper-border);
+            padding: 8px 18px;
+            font-size: 0.85rem;
+            border-radius: 20px;
+            margin-top: 25px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+
+        .btn-replay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .btn-replay:hover {
+            background: var(--paper-bg);
+            color: var(--accent-pink);
+            border-color: var(--accent-pink);
+        }
+
+        /* ==========================================
+           7. RESPONSIVE DESIGN
+           ========================================== */
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 2.8rem;
+            }
+
+            .envelope-wrapper {
+                max-width: 310px;
+                height: 200px;
+            }
+
+            .flap {
+                border-left-width: 155px;
+                border-right-width: 155px;
+                border-top-width: 105px;
+            }
+
+            .pocket::before, .pocket::after {
+                border-left-width: 155px;
+                border-right-width: 155px;
+                border-top-width: 100px;
+                border-bottom-width: 100px;
+            }
+
+            .pocket-bottom {
+                border-left-width: 155px;
+                border-right-width: 155px;
+                border-bottom-width: 90px;
+            }
+
+            .heart-seal {
+                top: 80px;
+                width: 38px;
+                height: 38px;
+            }
+
+            .letter-paper {
+                padding: 22px 18px;
+            }
+
+            .letter-content {
+                font-size: 0.98rem;
+                line-height: 1.7;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-  <audio id="bgAudio" loop src="khat.mp3"></audio>
+    <!-- Background Music Element -->
+    <audio id="bgMusic" src="khat.mp3" loop preload="auto"></audio>
 
-  <canvas id="webgl"></canvas>
-  <div class="overlay"></div>
+    <!-- Floating Audio Controller -->
+    <button class="music-control" id="musicToggleBtn" onclick="toggleAudio()">
+        <span id="musicIcon">🎵</span> <span id="musicText">Music On</span>
+    </button>
 
-  <button class="music" id="musicBtn" aria-label="Toggle Music">🎵</button>
+    <!-- Initial Welcome Popup Modal -->
+    <div class="modal-overlay" id="musicModal">
+        <div class="modal-card">
+            <h2>For Esha ✨</h2>
+            <p>Turn on the music for the full experience before reading your birthday letter.</p>
+            <button class="btn-action" onclick="startWithMusic()">
+                Play Music & Open 🎵
+            </button>
+        </div>
+    </div>
 
-  <main class="content">
+    <!-- Particle Canvas for ambient sparkles -->
+    <canvas id="particles-canvas"></canvas>
 
-    <section class="screen" id="intro">
-      <div class="small">A little something for</div>
-      <h1>Esha</h1>
-      <p class="subtitle">
-        Some people deserve more than just a simple text...<br>
-        so I created this little corner of the universe for you. ✨
-      </p>
-      <button class="btn" id="surpriseBtn">Open Surprise ✨</button>
-    </section>
+    <main class="stage" id="stage">
+        
+        <!-- Header -->
+        <header class="intro-header" id="introHeader">
+            <p class="sub-heading">A little something for you...</p>
+            <h1 class="main-title" id="titleHeading"></h1>
+        </header>
 
-    <section class="message" id="message">
-      <div class="emoji">🎂✨</div>
-      <h2>Happy Birthday!</h2>
-      <p>
-        I hope this year brings you endless reasons to smile, beautiful memories, and moments you'll cherish forever.
-        <br><br>
-        Someone may have darkness in his life but you have Lighten up his life and now he has a meaning to live, His Ordinary days are now much brighter.... 
-        Thank You✨
-        Keep Smiling.❤️
-      </p>
-      <div class="signature">Have a magical day ✨</div>
-    </section>
+        <!-- 3D Envelope -->
+        <div class="envelope-wrapper" id="envelopeWrapper" onclick="openEnvelope()" aria-label="Open Birthday Letter">
+            <div class="envelope">
+                <div class="flap"></div>
+                <div class="pocket"></div>
+                <div class="pocket-bottom"></div>
+                <div class="heart-seal">💌</div>
+            </div>
+        </div>
 
-  </main>
+        <!-- Open Action Button -->
+        <button class="btn-action" id="openBtn" onclick="openEnvelope()">
+            Open Your Letter 💌
+        </button>
 
-<script>
-// 1. BACKGROUND PARTICLES ENGINE
-const canvas = document.getElementById("webgl");
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 8;
+        <!-- Displayed Letter Paper -->
+        <div class="letter-paper" id="letterPaper">
+            <span class="letter-salutation" id="salutationText"></span>
+            <div class="letter-content" id="letterBody"></div>
+            <div class="letter-footer" id="letterFooter">
+                Made with a little extra thought for you ✨
+            </div>
+        </div>
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
+        <!-- Replay Action Button -->
+        <button class="btn-replay" id="replayBtn" onclick="resetExperience()">
+            Read it again ↻
+        </button>
 
-const starCount = window.innerWidth < 600 ? 2000 : 3500;
-const positions = new Float32Array(starCount * 3);
-const colors = new Float32Array(starCount * 3);
+    </main>
 
-const colorChoices = [
-  new THREE.Color("#ffffff"),
-  new THREE.Color("#f472b6"),
-  new THREE.Color("#c084fc")
-];
+    <script>
+        /* ==========================================
+           1. CONFIGURATION
+           ========================================== */
+        const birthdayConfig = {
+            name: "Esha",
+            headingText: "Happy Birthday, Esha ✨",
+            salutation: "Dear Esha,",
+            message: `Happy Birthday, Esha! 💗\n\nI hope your day is filled with beautiful moments, genuine smiles, and all the little things that make you happy.\n\nYou deserve a day that feels as special as you are.\n\nI just wanted to leave you a little something different today — a tiny digital letter made especially for you.\n\nKeep smiling, keep being yourself, and have an absolutely wonderful birthday. ✨\n\nHappy Birthday once again! 🎂💗`,
+            typingSpeed: 38
+        };
 
-for (let i = 0; i < starCount; i++) {
-  const radius = 4 + Math.random() * 25;
-  const theta = Math.random() * Math.PI * 2;
-  const phi = Math.acos(2 * Math.random() - 1);
+        /* ==========================================
+           2. DOM ELEMENTS & AUDIO STATE
+           ========================================== */
+        const stage = document.getElementById('stage');
+        const titleHeading = document.getElementById('titleHeading');
+        const envelopeWrapper = document.getElementById('envelopeWrapper');
+        const letterPaper = document.getElementById('letterPaper');
+        const salutationText = document.getElementById('salutationText');
+        const letterBody = document.getElementById('letterBody');
+        const letterFooter = document.getElementById('letterFooter');
+        const openBtn = document.getElementById('openBtn');
+        const replayBtn = document.getElementById('replayBtn');
+        const musicModal = document.getElementById('musicModal');
+        const bgMusic = document.getElementById('bgMusic');
+        const musicIcon = document.getElementById('musicIcon');
+        const musicText = document.getElementById('musicText');
 
-  positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-  positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-  positions[i * 3 + 2] = radius * Math.cos(phi);
+        let isTyping = false;
+        let typingTimeout = null;
+        let isAudioPlaying = false;
 
-  const col = colorChoices[Math.floor(Math.random() * colorChoices.length)];
-  colors[i * 3] = col.r;
-  colors[i * 3 + 1] = col.g;
-  colors[i * 3 + 2] = col.b;
-}
+        /* ==========================================
+           3. MUSIC & POPUP MODAL LOGIC
+           ========================================== */
+        function startWithMusic() {
+            musicModal.classList.add('hidden');
+            playAudio();
+            initTitleTyping();
+            initParticles();
+        }
 
-const geometry = new THREE.BufferGeometry();
-geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        function playAudio() {
+            bgMusic.play().then(() => {
+                isAudioPlaying = true;
+                musicIcon.textContent = "🎵";
+                musicText.textContent = "Pause";
+            }).catch(err => {
+                console.log("Audio play blocked:", err);
+            });
+        }
 
-const material = new THREE.PointsMaterial({
-  size: 0.04,
-  vertexColors: true,
-  transparent: true,
-  opacity: 0.8,
-  blending: THREE.AdditiveBlending
-});
+        function toggleAudio() {
+            if (isAudioPlaying) {
+                bgMusic.pause();
+                isAudioPlaying = false;
+                musicIcon.textContent = "🔇";
+                musicText.textContent = "Play";
+            } else {
+                playAudio();
+            }
+        }
 
-const stars = new THREE.Points(geometry, material);
-scene.add(stars);
+        /* ==========================================
+           4. TITLE TYPING & ENVELOPE OPENING
+           ========================================== */
+        function initTitleTyping() {
+            titleHeading.innerHTML = '';
+            let idx = 0;
+            const text = birthdayConfig.headingText;
+            
+            function typeChar() {
+                if (idx < text.length) {
+                    titleHeading.innerHTML += text.charAt(idx);
+                    idx++;
+                    setTimeout(typeChar, 70);
+                }
+            }
+            typeChar();
+        }
 
-function animate() {
-  requestAnimationFrame(animate);
-  stars.rotation.y += 0.0012;
-  stars.rotation.x += 0.0004;
-  renderer.render(scene, camera);
-}
-animate();
+        function openEnvelope() {
+            if (stage.classList.contains('open')) return;
 
-window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-});
+            // Trigger flap opening state
+            stage.classList.add('open');
+            openBtn.style.opacity = '0';
+            openBtn.style.pointerEvents = 'none';
 
+            // Hide envelope gently and present letter card
+            setTimeout(() => {
+                envelopeWrapper.classList.add('hide-envelope');
+                letterPaper.classList.add('show');
+                salutationText.textContent = birthdayConfig.salutation;
+                
+                // Begin text typing animation
+                setTimeout(startLetterTyping, 400);
+            }, 800);
+        }
 
-// 2. SURPRISE BUTTON & CELEBRATION LOGIC
-const button = document.getElementById("surpriseBtn");
-const intro = document.getElementById("intro");
-const message = document.getElementById("message");
-const audio = document.getElementById("bgAudio");
-const musicBtn = document.getElementById("musicBtn");
-let isPlaying = false;
+        /* ==========================================
+           5. TYPEWRITER ANIMATION LOGIC
+           ========================================== */
+        function startLetterTyping() {
+            letterBody.innerHTML = '';
+            isTyping = true;
 
-button.addEventListener("click", () => {
-  // Play song if paused
-  if (audio.paused) {
-    audio.play().then(() => {
-      isPlaying = true;
-      musicBtn.innerHTML = "❙❙";
-      musicBtn.classList.add("active");
-    }).catch(e => console.log("Playback error:", e));
-  }
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
 
-  // Smooth screen transition
-  if (window.gsap) {
-    gsap.to(intro, {
-      opacity: 0,
-      duration: 0.25,
-      onComplete: () => {
-        intro.style.display = "none";
-        message.style.display = "block";
-        gsap.to(message, { opacity: 1, duration: 0.35 });
-      }
-    });
-  } else {
-    intro.style.display = "none";
-    message.style.display = "block";
-    message.style.opacity = "1";
-  }
+            let charIndex = 0;
+            const fullText = birthdayConfig.message;
 
-  createCelebration();
-});
+            function processNextChar() {
+                if (charIndex < fullText.length) {
+                    const currentChar = fullText.charAt(charIndex);
+                    
+                    if (currentChar === '\n') {
+                        letterBody.appendChild(document.createElement('br'));
+                    } else {
+                        letterBody.appendChild(document.createTextNode(currentChar));
+                    }
 
-function createCelebration() {
-  const count = window.innerWidth < 600 ? 30 : 50;
-  const icons = ["♥", "✦", "✨", "🌸"];
+                    letterBody.appendChild(cursor);
+                    charIndex++;
 
-  for (let i = 0; i < count; i++) {
-    const el = document.createElement("div");
-    el.className = "heart";
-    el.innerHTML = icons[Math.floor(Math.random() * icons.length)];
-    
-    el.style.left = Math.random() * 100 + "vw";
-    el.style.top = "105vh";
-    el.style.fontSize = (12 + Math.random() * 20) + "px";
-    el.style.color = ["#f472b6", "#c084fc", "#ffffff"][Math.floor(Math.random() * 3)];
+                    const randomizedSpeed = birthdayConfig.typingSpeed + (Math.random() * 20 - 10);
+                    typingTimeout = setTimeout(processNextChar, randomizedSpeed);
+                } else {
+                    finishTyping(cursor);
+                }
+            }
 
-    document.body.appendChild(el);
+            processNextChar();
+        }
 
-    if (window.gsap) {
-      gsap.to(el, {
-        y: -(window.innerHeight * 1.2),
-        x: (Math.random() - 0.5) * 200,
-        rotation: Math.random() * 360,
-        opacity: 1,
-        duration: 2.5 + Math.random() * 1.5,
-        delay: Math.random() * 0.3,
-        ease: "power1.out",
-        onComplete: () => el.remove()
-      });
-    } else {
-      setTimeout(() => el.remove(), 3000);
-    }
-  }
-}
+        function finishTyping(cursor) {
+            isTyping = false;
+            cursor.style.transition = 'opacity 0.5s ease';
+            cursor.style.opacity = '0';
+            setTimeout(() => cursor.remove(), 500);
 
+            // Show footer tagline & replay button
+            letterFooter.style.opacity = '1';
+            replayBtn.classList.add('visible');
+        }
 
-// 3. MANUAL AUDIO CONTROLLER
-musicBtn.addEventListener("click", () => {
-  if (isPlaying) {
-    audio.pause();
-    musicBtn.innerHTML = "♪";
-    musicBtn.classList.remove("active");
-    isPlaying = false;
-  } else {
-    audio.play().then(() => {
-      isPlaying = true;
-      musicBtn.innerHTML = "❙❙";
-      musicBtn.classList.add("active");
-    }).catch(e => console.log("Play error:", e));
-  }
-});
-</script>
+        /* ==========================================
+           6. RESET EXPERIENCE
+           ========================================== */
+        function resetExperience() {
+            if (typingTimeout) clearTimeout(typingTimeout);
+            isTyping = false;
 
+            // Hide letter paper and footer
+            letterFooter.style.opacity = '0';
+            replayBtn.classList.remove('visible');
+            letterPaper.classList.remove('show');
+
+            // Reset letter contents
+            letterBody.innerHTML = '';
+            salutationText.textContent = '';
+            
+            // Re-display envelope
+            envelopeWrapper.classList.remove('hide-envelope');
+            stage.classList.remove('open');
+
+            // Show main open button
+            setTimeout(() => {
+                openBtn.style.opacity = '1';
+                openBtn.style.pointerEvents = 'auto';
+            }, 600);
+        }
+
+        /* ==========================================
+           7. AMBIENT PARTICLES
+           ========================================== */
+        function initParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            const particles = [];
+            const particleCount = window.innerWidth < 480 ? 15 : 28;
+
+            class Particle {
+                constructor() { this.reset(); }
+
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = height + Math.random() * 20;
+                    this.size = Math.random() * 12 + 8;
+                    this.speedY = Math.random() * 0.8 + 0.3;
+                    this.speedX = Math.random() * 0.4 - 0.2;
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                    this.type = Math.random() > 0.5 ? 'heart' : 'sparkle';
+                }
+
+                update() {
+                    this.y -= this.speedY;
+                    this.x += this.speedX;
+                    if (this.y < -20) this.reset();
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.opacity;
+                    ctx.fillStyle = '#ec407a';
+
+                    if (this.type === 'heart') {
+                        ctx.translate(this.x, this.y);
+                        ctx.beginPath();
+                        const topCurveHeight = this.size * 0.3;
+                        ctx.moveTo(0, topCurveHeight);
+                        ctx.bezierCurveTo(0, 0, -this.size / 2, 0, -this.size / 2, topCurveHeight);
+                        ctx.bezierCurveTo(-this.size / 2, (this.size + topCurveHeight) / 2, 0, this.size, 0, this.size);
+                        ctx.bezierCurveTo(0, this.size, this.size / 2, (this.size + topCurveHeight) / 2, this.size / 2, topCurveHeight);
+                        ctx.bezierCurveTo(this.size / 2, 0, 0, 0, 0, topCurveHeight);
+                        ctx.closePath();
+                        ctx.fill();
+                    } else {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size / 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    ctx.restore();
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+    </script>
 </body>
 </html>
